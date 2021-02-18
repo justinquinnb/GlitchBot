@@ -1,0 +1,61 @@
+v0.0.5
+2/11/21
+The Quirks and Cleanup Update
+✓ Added a `;;userInfo` command to retrieve member join date, registration date, role, and user ID.
+✓ Added an `;;updateInfo` command to display information regarding the specified update.
+✓ Added a `;;suggest` command that shares your idea to the Dev Server.
+✓ Added ID information as footers to the  `;;serverInfo` and `;;botInfo` command embeds.
+✓ Reorganized commands in the `;;help` command as some categories were getting too large.
+✓ Bot info now sources update info from a text file, meaning it will always be up-to-date.
+✓ Shrunk the warning embed icon to stay consistent with other icon sizing.
+✓ Recolored event rescheduling embed to purple for design language consistency.
+✓ Squashed some bugs and found some glitches
+
+--------------------
+
+v0.0.4
+2/2/21
+The Event Update
+✓ Added an `;;event` command so events always have enough info and appear in an organized, consistent embed.
+✓ Added a `;;rescheduleEvent` command so events can be rescheduled and users will be informed.
+✓ Added a `;;cancelEvent` command so events can be canceled and users informed.
+✓ Added a `;;deleteEvent` command so events can be deleted without informing users.
+✓ Added a `;;puppet` and `;;stagePuppet` commands for developers.
+✓ Squashed some bugs and found some glitches
+
+--------------------
+
+v0.0.3
+1/28/21
+The Moderation Update
+✓ Added a `;;ban` command giving mods the power to ban with majority approval.
+✓ Added a `;;purge` command allowing mods to purge up to 10 messages at a time, admins up to 25, and owners up to 50 (as a safety measure).
+✓ Added a `;;warn` command so mods, admins, and owners can anonymously warn server members.
+✓ Added a `;;resetWarns` command so admins owners can reset a member's warning count.
+✓ Added a `;;report` command so anyone can report a user's (including member of power's) actions for review.
+✓ Fixed "None" name bug by using a user's name rather than a user's nickname (which may not exist).
+
+--------------------
+
+v0.0.2
+1/27/21
+The Basics Update
+✓ Added a `;;serverInfo` command to display server info.
+✓ Added a `;;forceStop` command to allow devs to force bot shutdown.
+✓ Added an `;;invite` command so anyone can create a personal invite with mod approval.
+✓ Added a `;;massInvite` command so anyone can create an invite for a server with mod approval.
+✓ Added a `;;bugReport` command that sends a bug report to the bug report channel in the Dev Server.
+✓ Improved cog loading/unloading commands to prevent unnecessary exceptions, allowing for actual error handling.
+✓ Improved error handling for other commands.
+
+--------------------
+
+v0.0.1
+1/12/21
+The Framework Update
+✓ Developed an auto-generating and updating message embed for the `;;help` command
+✓ Added custom message embeds for member join, ban and leave events
+✓ Reworked the extremely rudimentary command system to rely on cogs, organizing code, easing debugging, and enabling devs to toggle command groups
+✓ Created `;;unloadCog` and `;;loadCog` commands for developers to toggle command groups
+✓ Added a `;;botInfo` command to display bot and system info
+✓ Squashed some bugs and found some glitches
