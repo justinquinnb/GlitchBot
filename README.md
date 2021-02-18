@@ -11,8 +11,13 @@ BetaBot is currently, and will likely forever be, in development. Being GlitchBo
 * Briana F., Tester
 
 ## Features & Dev Info:
-### Language and Library
-BetaBot is written in Python using the latest version of the Discord.py library.
+### Language
+BetaBot is written in Python 3.8.2
+
+### Packages
+* Discord
+* Flask
+* Replit
 
 ### Features
 * A variety of commands to ease in maintaining a healthy server...
