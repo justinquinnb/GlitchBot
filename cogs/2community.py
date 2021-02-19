@@ -3,13 +3,15 @@ from discord.ext import commands
 from replit import db
 import asyncio
 import datetime
+import os
+import json
 
 # Mod channels for use in invites
-gbdModChannel = 796411226468122674
+gbhModChannel = 796411226468122674
 ggModChannel = 769259341249249330
-gbdJoinChannel = 796452386461319248
+gbhJoinChannel = 796452386461319248
 ggJoinChannel = 795493452967968798
-gbdEventChannel = 796452386461319248
+gbhEventChannel = 796452386461319248
 ggEventChannel = 769040700976136242
 
 # GG colors for use in embeds
@@ -43,8 +45,8 @@ class Community(commands.Cog):
 
         # Get the correct information using the IDs from the two servers
         if ctx.guild.name == "GlitchBot's Home":
-          modChannel = self.client.get_channel(gbdModChannel)
-          joinChannel = self.client.get_channel(gbdJoinChannel)
+          modChannel = self.client.get_channel(gbhModChannel)
+          joinChannel = self.client.get_channel(gbhJoinChannel)
           yesEmoji = self.client.get_emoji(802964584868085770)
           noEmoji = self.client.get_emoji(802964584683012137)
           modRole = ctx.guild.get_role(801301557093728265)
@@ -176,8 +178,8 @@ class Community(commands.Cog):
 
       # Get the correct information using the IDs from the two servers
       if ctx.guild.name == "GlitchBot's Home":
-        modChannel = self.client.get_channel(gbdModChannel)
-        joinChannel = self.client.get_channel(gbdJoinChannel)
+        modChannel = self.client.get_channel(gbhModChannel)
+        joinChannel = self.client.get_channel(gbhJoinChannel)
         yesEmoji = self.client.get_emoji(802964584868085770)
         noEmoji = self.client.get_emoji(802964584683012137)
         modRole = ctx.guild.get_role(801301557093728265)
@@ -294,7 +296,7 @@ class Community(commands.Cog):
   @commands.command()
   async def event(self, ctx, name: str, desc: str, game: str, startTime: str):
     if ctx.guild.name == "GlitchBot's Home":
-      eventChannel = self.client.get_channel(gbdEventChannel)
+      eventChannel = self.client.get_channel(gbhEventChannel)
       yesEmoji = self.client.get_emoji(802964584868085770)
       maybeEmoji = self.client.get_emoji(805245198686879804)
       noEmoji = self.client.get_emoji(802964584683012137)
@@ -324,7 +326,7 @@ class Community(commands.Cog):
   async def cancelEvent(self, ctx, *, name: str):
     if ((("ID For Event " + name) in db) and (ctx.message.author.id == db["Host ID For Event " + name])) and (db["ID For Event " + name] != None):
       if ctx.guild.name == "GlitchBot's Home":
-        eventChannel = self.client.get_channel(gbdEventChannel)
+        eventChannel = self.client.get_channel(gbhEventChannel)
       elif ctx.guild.name == "Glitched Gaming":
         eventChannel = self.client.get_channel(ggEventChannel)
       
@@ -357,7 +359,7 @@ class Community(commands.Cog):
     
     if ((("ID For Event " + name) in db) and (db["ID For Event " + name] != None)) and hostOrMod:
       if ctx.guild.name == "GlitchBot's Home":
-        eventChannel = self.client.get_channel(gbdEventChannel)
+        eventChannel = self.client.get_channel(gbhEventChannel)
       elif ctx.guild.name == "Glitched Gaming":
         eventChannel = self.client.get_channel(ggEventChannel)
       
@@ -377,7 +379,7 @@ class Community(commands.Cog):
   async def rescheduleEvent(self, ctx, name: str, startTime: str):
     if ((("ID For Event " + name) in db) and (ctx.message.author.id == db["Host ID For Event " + name])) and (db["ID For Event " + name] != None):
       if ctx.guild.name == "GlitchBot's Home":
-        eventChannel = self.client.get_channel(gbdEventChannel)
+        eventChannel = self.client.get_channel(gbhEventChannel)
       elif ctx.guild.name == "Glitched Gaming":
         eventChannel = self.client.get_channel(ggEventChannel)
       

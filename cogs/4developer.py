@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import datetime
 from replit import db
+import os
+import json
 
 # GG colors for use in embeds
 GGred=0xc81e4e

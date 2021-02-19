@@ -4,6 +4,7 @@ import os
 import random
 import string
 import asyncio
+import json
 from datetime import date
 from discord.ext import commands
 from replit import db
@@ -12,7 +13,7 @@ from replit import db
 intents = discord.Intents(members=True, guilds=True, bans=True, invites=True, messages=True, reactions=True)
 
 # Set the command prefix and additional bot settings. Use default intents.
-client = commands.Bot(command_prefix='!!', intents=intents, help_command=None, owner_id=os.getenv('JustinID'))
+client = commands.Bot(command_prefix='!!', intents=intents, help_command=None, owner_id=os.environ['JustinID'])
 
 # Updates every time the bot is restarted. Used in the botInfo command
 db["Last Restart"] = (date.today()).strftime("%m/%d/%y")
@@ -20,10 +21,14 @@ db["Last Restart"] = (date.today()).strftime("%m/%d/%y")
 # Reset the forceStop code
 db["forceStop Confirmation Code"] = None
 
-# GG colors for use in embeds
-GGred=0xc81e4e
-GGblue=0x1dc9bf
-GGpurple=0x9a2ab0
+# Store necessary info locally from JSON and env files
+with open('globalVars.json', 'r') as jsonFile:
+  globalVars = json.load(jsonFile)
+
+# Store color codes
+colors = {}
+for color in globalVars["embedColors"]:
+  colors[color["color"]] = int(color["hex"], 0)
 
 # Custom functions
 # Ordinal function
@@ -99,19 +104,19 @@ async def on_member_join(member):
   # Determine the channel to send the join message to
   channel = member.guild.system_channel
   if str(member.guild) == "Glitched Gaming":
-    joinEmbed = discord.Embed(title=f"Welcome to Glitched Gaming, {member.name}!", color=GGblue)
+    joinEmbed = discord.Embed(title=f"Welcome to Glitched Gaming, {member.name}!", color=colors["GGblue"])
     joinEmbed.set_author(name=f"{member.name} joined the server | {ordinal(len(member.guild.members))} member", icon_url=member.avatar_url)
     joinEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/798607925882126346/memberjoin.png")
     await channel.send(embed=joinEmbed)
     db["Warnings For " + str(member.id)] = 0
   elif str(member.guild) == "GlitchBot's Home":
-    joinEmbed = discord.Embed(title=f"Welcome to the GlitchBot development server, {member.name}!", color=GGblue)
+    joinEmbed = discord.Embed(title=f"Welcome to the GlitchBot development server, {member.name}!", color=colors["GGblue"])
     joinEmbed.set_author(name=f"{member.name} joined the server | {ordinal(len(member.guild.members))} member", icon_url=member.avatar_url)
     joinEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/798607925882126346/memberjoin.png")
     await channel.send(embed=joinEmbed)
     db["Warnings For " + str(member.id)] = 0
   else:
-    joinEmbed = discord.Embed(title=f"Welcome to {str(member.guild)}, {member.name}!", color=GGblue)
+    joinEmbed = discord.Embed(title=f"Welcome to {str(member.guild)}, {member.name}!", color=colors["GGblue"])
     joinEmbed.set_author(name=f"{member.name} joined the server | {ordinal(len(member.guild.members))} member", icon_url=member.avatar_url)
     joinEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/798607925882126346/memberjoin.png")
     await channel.send(embed=joinEmbed)
@@ -123,7 +128,7 @@ async def on_member_remove(member):
     await member.guild.fetch_ban(member)
   except:
     channel = member.guild.system_channel
-    leaveEmbed = discord.Embed(title=f"Bye, {member.name}! See you around!", color=GGred)
+    leaveEmbed = discord.Embed(title=f"Bye, {member.name}! See you around!", color=colors["GGred"])
     leaveEmbed.set_author(name=f"{member.name} left the server", icon_url=member.avatar_url)
     leaveEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/798608106057629766/memberleave.png")
     await channel.send(embed=leaveEmbed)
@@ -132,7 +137,7 @@ async def on_member_remove(member):
 @client.event
 async def on_member_ban(guild, member):
   channel = member.guild.system_channel
-  banEmbed = discord.Embed(title=f"The almighty ban hammer has spoken. {member.name}, begone!", color=GGred)
+  banEmbed = discord.Embed(title=f"The almighty ban hammer has spoken. {member.name}, begone!", color=colors["GGred"])
   banEmbed.set_author(name=f"{member.name} was banned", icon_url=member.avatar_url)
   banEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/798752034077671464/memberban.png")
   await channel.send(embed=banEmbed)
@@ -184,7 +189,7 @@ async def forceStop(ctx, inputCode=None):
     confirmation = await ctx.fetch_message(db["forceStop Confirmation Message ID"])
     print(f"Force stop confirmed by {ctx.message.author.name}! Preventing UpTime ping...")
     await confirmation.edit(content="**Bot force stop confirmed.** The code is no longer usable.")
-    confirmationEmbed = discord.Embed(title="Bot will shut down within 5 minutes...", color=GGred)
+    confirmationEmbed = discord.Embed(title="Bot will shut down within 5 minutes...", color=colors["GGred"])
     confirmationEmbed.set_author(name=f"Force stop confirmed by {ctx.message.author.name}.", icon_url=ctx.message.author.avatar_url)
     confirmationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/800209126550011904/forcestop.png")
     await ctx.send(embed=confirmationEmbed)
@@ -272,7 +277,7 @@ async def loadCogs(ctx):
 @client.command()
 async def help(ctx):
   # Set up the base help embed
-  helpEmbed = discord.Embed(title="Here's a list of commands:", description="Required parameters in <>. Optional parameters in ().", color=GGpurple)
+  helpEmbed = discord.Embed(title="Here's a list of commands:", description="Required parameters in <>. Optional parameters in ().", color=colors["GGpurple"])
 
   # Here, cog refers to the groups of commands located outside this file. Group names
   # are for commands which belong in a cog, but are located in this file. All cogs are

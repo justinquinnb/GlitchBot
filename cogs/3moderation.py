@@ -2,11 +2,13 @@ import discord
 from discord.ext import commands
 from replit import db
 import asyncio
+import os
+import json
 
 # Mod channels for use in invites
-gbdModChannel = 796411226468122674
+gbhModChannel = 796411226468122674
 ggModChannel = 769259341249249330
-gbdJoinChannel = 796452386461319248
+gbhJoinChannel = 796452386461319248
 ggJoinChannel = 795493452967968798
 
 # GG colors for use in embeds
@@ -84,7 +86,7 @@ class Moderation(commands.Cog):
 
         # Get the correct information using the IDs from the two servers
         if ctx.guild.name == "GlitchBot's Home":
-          modChannel = self.client.get_channel(gbdModChannel)
+          modChannel = self.client.get_channel(gbhModChannel)
           yesEmoji = self.client.get_emoji(802964584868085770)
           noEmoji = self.client.get_emoji(802964584683012137)
           modRole = ctx.guild.get_role(801301557093728265)
@@ -255,7 +257,7 @@ class Moderation(commands.Cog):
       elif ctx.guild.name == "GlitchBot's Home":
         modRole = ctx.guild.get_role(801301557093728265)
         adminRole = ctx.guild.get_role(801301846446178366)
-        modChannel = self.client.get_channel(gbdModChannel)
+        modChannel = self.client.get_channel(gbhModChannel)
       
       await modChannel.send(content=f"**{modRole.mention} s and {adminRole.mention} s:**", embed=reportEmbed)
       response = await ctx.send(f"**{user.name} was reported to the mods!** This exchange will be deleted in 3 seconds.")

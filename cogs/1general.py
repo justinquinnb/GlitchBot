@@ -2,19 +2,32 @@ import discord
 from discord.ext import commands
 from replit import db
 import datetime
+import os
+import json
 
-# Mod channels for use in invites
-gbdModChannel = 796411226468122674
-ggModChannel = 769259341249249330
-gbdJoinChannel = 796452386461319248
-ggJoinChannel = 795493452967968798
-gbdEventChannel = 796452386461319248
-ggEventChannel = 769040700976136242
+# Store necessary info locally from JSON and env files
+with open('globalVars.json', 'r') as jsonFile:
+  globalVars = json.load(jsonFile)
 
-# GG colors for use in embeds
-GGred=0xc81e4e
-GGblue=0x1dc9bf
-GGpurple=0x9a2ab0
+# Store color codes
+colors = {}
+for color in globalVars["embedColors"]:
+  colors[color["color"]] = int(color["hex"], 0)
+
+# Store guild IDs
+guilds = {}
+for guild in globalVars["guildIDs"]:
+  guilds[guild["guild"]] = guild["ID"]
+
+# Store channel IDs
+channels = {}
+for channel in globalVars["channelIDs"]:
+  channels[channel["channel"]] = channel["ID"]
+
+# Store role IDs
+roles = {}
+for role in globalVars["roleIDs"]:
+  roles[role["role"]] = role["ID"]
 
 # Denotes this code as a class of commands under the name General and initializes it
 class General(commands.Cog):
@@ -44,7 +57,7 @@ class General(commands.Cog):
       botVersion = content[0].strip()
       botUpdateDate = content[1].strip()
 
-    botInfoEmbed = discord.Embed(title="BetaBot Info:", color=GGpurple)
+    botInfoEmbed = discord.Embed(title="BetaBot Info:", color=colors["GGpurple"])
     botInfoEmbed.set_thumbnail  (url="https://cdn.discordapp.com/attachments/796907538570412033/798242397070032926/GlitchBotsHomeIcon.png")
     botInfoEmbed.add_field(name="Version:", value=botVersion, inline=True)
     botInfoEmbed.add_field(name="Last Updated:", value=botUpdateDate, inline=True)
@@ -65,7 +78,7 @@ class General(commands.Cog):
         botCount += 1
 
     # Create and send the server info embed
-    serverInfoEmbed = discord.Embed(title= ctx.guild.name + " Info:", color=GGpurple)
+    serverInfoEmbed = discord.Embed(title= ctx.guild.name + " Info:", color=colors["GGpurple"])
     serverInfoEmbed.set_thumbnail(url=ctx.guild.icon_url)
     serverInfoEmbed.add_field(name="Owner:", value=ctx.guild.owner.name, inline=True)
     serverInfoEmbed.add_field(name="Creation:", value=ctx.guild.created_at.strftime ("%m/%d/%y"), inline=True)
@@ -86,7 +99,7 @@ class General(commands.Cog):
       if str(user.color) != "#000000":
         userInfoEmbed = discord.Embed(title=user.name, color=user.color)
       else:
-        userInfoEmbed = discord.Embed(title=user.name, color=GGpurple)
+        userInfoEmbed = discord.Embed(title=user.name, color=colors["GGpurple"])
       
       userInfoEmbed.set_thumbnail(url=user.avatar_url)
       userInfoEmbed.add_field(name="Joined on:", value=user.joined_at.strftime("%m/%d/%y"), inline=True)
@@ -154,12 +167,12 @@ class General(commands.Cog):
   @commands.command()
   async def bugReport(self, ctx, *, bugDesc: str):
     # Get the correct information using the dev server ids
-    devServer = self.client.get_guild(789323920506486807)
-    devChannel = devServer.get_channel(804169142876766230)
-    devRole = devServer.get_role(796411321641467934)
+    devServer = self.client.get_guild(guilds["GlitchBot's Home"])
+    devChannel = devServer.get_channel(channels["gbhBugReports"])
+    devRole = devServer.get_role(roles["gbhDevelopers"])
 
     # Create a bug report embed
-    bugReportEmbed = discord.Embed(title=f"Bug report from {ctx.guild.name}:", description=bugDesc, color=GGred)
+    bugReportEmbed = discord.Embed(title=f"Bug report from {ctx.guild.name}:", description=bugDesc, color=colors["GGred"])
     bugReportEmbed.set_author(name=f"{ctx.message.author.name} has found a bug", icon_url=ctx.message.author.avatar_url)
     bugReportEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804187951529197628/bugreport.png")
     bugReportEmbed.set_footer(text=f"Report made on {(datetime.datetime.now()).strftime('%x at %X')}")
@@ -170,12 +183,12 @@ class General(commands.Cog):
   @commands.command()
   async def suggest(self, ctx, *, suggestion: str):
     # Get the correct information using the dev server ids
-    devServer = self.client.get_guild(789323920506486807)
-    devChannel = devServer.get_channel(806004797232119838)
-    devRole = devServer.get_role(796411321641467934)
+    devServer = self.client.get_guild(guilds["GlitchBot's Home"])
+    devChannel = devServer.get_channel(channels["gbhSuggestions"])
+    devRole = devServer.get_role(roles["gbhDevelopers"])
 
     # Create a bug report embed
-    suggestionEmbed = discord.Embed(title=f"Suggestion from {ctx.guild.name}:", description=suggestion, color=GGblue)
+    suggestionEmbed = discord.Embed(title=f"Suggestion from {ctx.guild.name}:", description=suggestion, color=colors["GGblue"])
     suggestionEmbed.set_author(name=f"{ctx.message.author.name} has a suggestion", icon_url=ctx.message.author.avatar_url)
     suggestionEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/809597548523552788/suggestion.png")
 
