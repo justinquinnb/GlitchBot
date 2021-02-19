@@ -2,13 +2,6 @@ import discord
 from discord.ext import commands
 import datetime
 from replit import db
-import os
-import json
-
-# GG colors for use in embeds
-GGred=0xc81e4e
-GGblue=0x1dc9bf
-GGpurple=0x9a2ab0
 
 # Denotes this code as a class of commands under the name General and initializes it
 class Developer(commands.Cog):

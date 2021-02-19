@@ -2,19 +2,31 @@ import discord
 from discord.ext import commands
 from replit import db
 import asyncio
-import os
 import json
 
-# Mod channels for use in invites
-gbhModChannel = 796411226468122674
-ggModChannel = 769259341249249330
-gbhJoinChannel = 796452386461319248
-ggJoinChannel = 795493452967968798
+# Store necessary info locally from JSON and env files
+with open('globalVars.json', 'r') as jsonFile:
+  globalVars = json.load(jsonFile)
 
-# GG colors for use in embeds
-GGred=0xc81e4e
-GGblue=0x1dc9bf
-GGpurple=0x9a2ab0
+# Store color codes
+colors = {}
+for color in globalVars["embedColors"]:
+  colors[color["color"]] = int(color["hex"], 0)
+
+# Store channel IDs
+channels = {}
+for channel in globalVars["channelIDs"]:
+  channels[channel["channel"]] = channel["ID"]
+
+# Store role IDs
+roles = {}
+for role in globalVars["roleIDs"]:
+  roles[role["role"]] = role["ID"]
+
+# Store emoji IDs
+emojis = {}
+for emoji in globalVars["emojiIDs"]:
+  emojis[emoji["emoji"]] = emoji["ID"]
 
 # Ordinal function
 def ordinal(num):
@@ -39,7 +51,7 @@ class Moderation(commands.Cog):
     self.client = client
 
     # Gives this cog the attributes needed for the auto help command.
-    self.parameters = ["<@user>", "<numOfMessages>", "<@user>", "<@user>", "<@user> <reason>"]
+    self.parameters = ["<@user>", "<numOfMessages>", "<@user> <reason>", "<@user>", "<@user> <reason>"]
     self.descriptions = ["Allows mods to vote-ban a user.",
     "Deletes specified number of messages.",
     "Allows mods and admins to anonymously warn a user.",
@@ -86,20 +98,20 @@ class Moderation(commands.Cog):
 
         # Get the correct information using the IDs from the two servers
         if ctx.guild.name == "GlitchBot's Home":
-          modChannel = self.client.get_channel(gbhModChannel)
-          yesEmoji = self.client.get_emoji(802964584868085770)
-          noEmoji = self.client.get_emoji(802964584683012137)
-          modRole = ctx.guild.get_role(801301557093728265)
-          adminRole = ctx.guild.get_role(801301846446178366)
+          modChannel = self.client.get_channel(channels["gbhMod"])
+          yesEmoji = self.client.get_emoji(emojis["gbhYes"])
+          noEmoji = self.client.get_emoji(emojis["gbhNo"])
+          modRole = ctx.guild.get_role(roles["gbhMods"])
+          adminRole = ctx.guild.get_role(roles["gbhAdmins"])
         elif ctx.guild.name == "Glitched Gaming":
-          modChannel = self.client.get_channel(ggModChannel)
-          yesEmoji = self.client.get_emoji(779855811480387635)
-          noEmoji = self.client.get_emoji(779855943130546196)
-          modRole = ctx.guild.get_role(769175358779162647)
-          adminRole = ctx.guild.get_role(769176118213083166)
+          modChannel = self.client.get_channel(channels["ggMod"])
+          yesEmoji = self.client.get_emoji(emojis["ggYes"])
+          noEmoji = self.client.get_emoji(emojis["ggNo"])
+          modRole = ctx.guild.get_role(roles["ggMods"])
+          adminRole = ctx.guild.get_role(roles["ggAdmins"])
         
         # Send a confirmation embed to the mod channel and add the reactions
-        banConfirmEmbed = discord.Embed(title="React to approve or disapprove!", color = GGpurple)
+        banConfirmEmbed = discord.Embed(title="React to approve or disapprove!", color = colors["GGpurple"])
         banConfirmEmbed.set_author(name=f"{ctx.message.author.name} wants to ban {user.name}", icon_url=ctx.message.author.avatar_url)
         banConfirmEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804383266635382854/memberbanpending.png")
         banConfirmEmbed.set_footer(text="Confirmation will end in 30 minutes")
@@ -134,7 +146,7 @@ class Moderation(commands.Cog):
 
         if (approves == disapproves) and (approves > 1 and disapproves > 1):
           # Inform the mods of the final decision using an embed
-          modResultsEmbed = discord.Embed(title="There was a tie!", description=f"{user.name} will not be banned.", color=GGpurple)
+          modResultsEmbed = discord.Embed(title="There was a tie!", description=f"{user.name} will not be banned.", color=colors["GGpurple"])
           modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804384663728422952/memberbanautocontroversial.png")
           modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
           modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
@@ -142,13 +154,13 @@ class Moderation(commands.Cog):
 
         elif (approves == 1 and disapproves == 1):
           # Inform the mods of the final decision using an embed
-          modResultsEmbed = discord.Embed(title="Nobody responded!", description=f"{user.name} will not be banned.", color=GGpurple)
+          modResultsEmbed = discord.Embed(title="Nobody responded!", description=f"{user.name} will not be banned.", color=colors["GGpurple"])
           modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804384663728422952/memberbanautocontroversial.png")
           await modChannel.send(embed=modResultsEmbed)
 
         elif approves > disapproves:
           # Inform the mods of the final decision using an embed
-          modResultsEmbed = discord.Embed(title="Ban approved!", description=f"{user.name} will be banned!", color=GGred)
+          modResultsEmbed = discord.Embed(title="Ban approved!", description=f"{user.name} will be banned!", color=colors["GGred"])
           modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804385045095776316/memberbanapproved.png")
           modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
           modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
@@ -159,7 +171,7 @@ class Moderation(commands.Cog):
       
         elif approves < disapproves:
           # Inform the mods of the final decision using an embed
-          modResultsEmbed = discord.Embed(title="Ban not approved!", description=f"{user.name} will not be banned!", color=GGblue)
+          modResultsEmbed = discord.Embed(title="Ban not approved!", description=f"{user.name} will not be banned!", color=colors["GGblue"])
           modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804384084382056528/memberbandisapproved.png")
           modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
           modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
@@ -221,7 +233,7 @@ class Moderation(commands.Cog):
         db["Warnings For " + str(user.id)] += 1
     
       # Create a warning embed and send it
-      warningEmbed = discord.Embed(title="You've received a warning!", description=reason, color=GGred)
+      warningEmbed = discord.Embed(title="You've received a warning!", description=reason, color=colors["GGred"])
       warningEmbed.set_author(name=f"{ctx.guild.name} has sent you a warning", icon_url=ctx.guild.icon_url)
       warningEmbed.set_thumbnail(url="https://media.discordapp.net/attachments/796907538570412033/809585178032341032/warning.png")
       warningEmbed.set_footer(text=f"This is your {ordinal(db['Warnings For ' + str(user.id)])} warning!")
@@ -246,18 +258,18 @@ class Moderation(commands.Cog):
   async def report(self, ctx, user: discord.Member, reason: str):
     if ((ctx.message.author.top_role.name != "Mods") and (ctx.message.author.top_role.name != "Admins")) and ctx.message.author.top_role.name != "Owners":
       # Create a report embed and send it to the mods channel
-      reportEmbed = discord.Embed(title=f"{user.name} was reported for...", description=reason, color=GGred)
+      reportEmbed = discord.Embed(title=f"{user.name} was reported for...", description=reason, color=colors["GGred"])
       reportEmbed.set_author(name=f"{ctx.message.author.name} made a report", icon_url=ctx.message.author.avatar_url)
       reportEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804537971994263592/warning.png")
 
       if ctx.guild.name == "Glitched Gaming":
-        modRole = ctx.guild.get_role(769175358779162647)
-        adminRole = ctx.guild.get_role(769176118213083166)
-        modChannel = self.client.get_channel(ggModChannel)
+        modRole = ctx.guild.get_role(roles["ggMods"])
+        adminRole = ctx.guild.get_role(roles["ggAdmins"])
+        modChannel = self.client.get_channel(channels["ggMod"])
       elif ctx.guild.name == "GlitchBot's Home":
-        modRole = ctx.guild.get_role(801301557093728265)
-        adminRole = ctx.guild.get_role(801301846446178366)
-        modChannel = self.client.get_channel(gbhModChannel)
+        modRole = ctx.guild.get_role(roles["gbhMods"])
+        adminRole = ctx.guild.get_role(roles["gbhAdmins"])
+        modChannel = self.client.get_channel(channels["gbhMod"])
       
       await modChannel.send(content=f"**{modRole.mention} s and {adminRole.mention} s:**", embed=reportEmbed)
       response = await ctx.send(f"**{user.name} was reported to the mods!** This exchange will be deleted in 3 seconds.")

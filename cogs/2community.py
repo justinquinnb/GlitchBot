@@ -3,21 +3,31 @@ from discord.ext import commands
 from replit import db
 import asyncio
 import datetime
-import os
 import json
 
-# Mod channels for use in invites
-gbhModChannel = 796411226468122674
-ggModChannel = 769259341249249330
-gbhJoinChannel = 796452386461319248
-ggJoinChannel = 795493452967968798
-gbhEventChannel = 796452386461319248
-ggEventChannel = 769040700976136242
+# Store necessary info locally from JSON and env files
+with open('globalVars.json', 'r') as jsonFile:
+  globalVars = json.load(jsonFile)
 
-# GG colors for use in embeds
-GGred=0xc81e4e
-GGblue=0x1dc9bf
-GGpurple=0x9a2ab0
+# Store color codes
+colors = {}
+for color in globalVars["embedColors"]:
+  colors[color["color"]] = int(color["hex"], 0)
+
+# Store channel IDs
+channels = {}
+for channel in globalVars["channelIDs"]:
+  channels[channel["channel"]] = channel["ID"]
+
+# Store role IDs
+roles = {}
+for role in globalVars["roleIDs"]:
+  roles[role["role"]] = role["ID"]
+
+# Store emoji IDs
+emojis = {}
+for emoji in globalVars["emojiIDs"]:
+  emojis[emoji["emoji"]] = emoji["ID"]
 
 # Denotes this code as a class of commands under the name Community and initializes it
 class Community(commands.Cog):
@@ -45,22 +55,22 @@ class Community(commands.Cog):
 
         # Get the correct information using the IDs from the two servers
         if ctx.guild.name == "GlitchBot's Home":
-          modChannel = self.client.get_channel(gbhModChannel)
-          joinChannel = self.client.get_channel(gbhJoinChannel)
-          yesEmoji = self.client.get_emoji(802964584868085770)
-          noEmoji = self.client.get_emoji(802964584683012137)
-          modRole = ctx.guild.get_role(801301557093728265)
-          adminRole = ctx.guild.get_role(801301846446178366)
+          modChannel = self.client.get_channel(channels["gbhMod"])
+          joinChannel = self.client.get_channel(channels["gbhJoin"])
+          yesEmoji = self.client.get_emoji(emojis["gbhYes"])
+          noEmoji = self.client.get_emoji(emojis["gbhNo"])
+          modRole = ctx.guild.get_role(roles["gbhMods"])
+          adminRole = ctx.guild.get_role(roles["gbhAdminss"])
         elif ctx.guild.name == "Glitched Gaming":
-          modChannel = self.client.get_channel(ggModChannel)
-          joinChannel = self.client.get_channel(ggJoinChannel)
-          yesEmoji = self.client.get_emoji(779855811480387635)
-          noEmoji = self.client.get_emoji(779855943130546196)
-          modRole = ctx.guild.get_role(769175358779162647)
-          adminRole = ctx.guild.get_role(769176118213083166)
+          modChannel = self.client.get_channel(channels["ggMod"])
+          joinChannel = self.client.get_channel(channels["ggJoin"])
+          yesEmoji = self.client.get_emoji(emojis["ggYes"])
+          noEmoji = self.client.get_emoji(emojis["ggNo"])
+          modRole = ctx.guild.get_role(roles["ggMods"])
+          adminRole = ctx.guild.get_role(roles["ggAdmins"])
 
         # Send a confirmation embed to the mod channel and add the reactions
-        inviteConfirmEmbed = discord.Embed(title="React to approve or disapprove!", color = GGpurple)
+        inviteConfirmEmbed = discord.Embed(title="React to approve or disapprove!", color=colors["GGpurple"])
         inviteConfirmEmbed.set_author(name=f"{ctx.message.author.name} wants to invite {user.name} ({name})", icon_url=ctx.message.author.avatar_url)
         inviteConfirmEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284828870410280/invitepending.png")
         inviteConfirmEmbed.set_footer(text="Confirmation will end in 10 minutes")
@@ -97,25 +107,25 @@ class Community(commands.Cog):
       
         if (approves == disapproves) and (approves > 1 and disapproves > 1):
           # Inform the mods of the final decision using an embed
-          modResultsEmbed = discord.Embed(title="There was a tie!", description=f"An invite will not be sent for {user.name}.", color=GGpurple)
+          modResultsEmbed = discord.Embed(title="There was a tie!", description=f"An invite will not be sent for {user.name}.", color=colors["GGpurple"])
           modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284824822382633/invitecontroversial.png")
           modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
           modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
           await modChannel.send(embed=modResultsEmbed)
 
           # Inform the initiator of the final decision
-          initiatorResultsEmbed = discord.Embed(title=f"Your invite for {user.name} resulted in a tie!", description="An invite will not be sent, but you may try inviting them again at any time!", color=GGpurple)
+          initiatorResultsEmbed = discord.Embed(title=f"Your invite for {user.name} resulted in a tie!", description="An invite will not be sent, but you may try inviting them again at any time!", color=colors["GGpurple"])
           initiatorResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284824822382633/invitecontroversial.png")
           await initiator.send(embed=initiatorResultsEmbed)
 
         elif (approves == 1 and disapproves == 1):
           # Inform the mods of the final decision using an embed
-          modResultsEmbed = discord.Embed(title="Nobody responded!", description=f"An invite will be sent for {user.name}!", color=GGpurple)
+          modResultsEmbed = discord.Embed(title="Nobody responded!", description=f"An invite will be sent for {user.name}!", color=colors["GGpurple"])
           modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803780487453736990/inviteautoapproved.png")
           await modChannel.send(embed=modResultsEmbed)
         
           # Inform the initiator of the final decision
-          invitationEmbed = discord.Embed(title=f"Your invite for {user.name} was auto-approved!", description="Send them this invite link!", color=GGpurple)
+          invitationEmbed = discord.Embed(title=f"Your invite for {user.name} was auto-approved!", description="Send them this invite link!", color=colors["GGpurple"])
           invitationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803780487453736990/inviteautoapproved.png")
           invitationEmbed.set_footer(text="Link is one-time use and will expire in 12 hours.")
 
@@ -126,14 +136,14 @@ class Community(commands.Cog):
 
         elif approves > disapproves:
           # Inform the mods of the final decision using an embed
-          modResultsEmbed = discord.Embed(title="Invite approved!", description=f"An invite will be sent for {user.name}!", color=GGblue)
+          modResultsEmbed = discord.Embed(title="Invite approved!", description=f"An invite will be sent for {user.name}!", color=colors["GGblue"])
           modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803780490255532042/inviteapproved.png")
           modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
           modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
           await modChannel.send(embed=modResultsEmbed)
         
           # Inform the initiator of the final decision
-          invitationEmbed = discord.Embed(title=f"Your invite for {user.name} was approved!", description="Send them this invite link!", color=GGblue)
+          invitationEmbed = discord.Embed(title=f"Your invite for {user.name} was approved!", description="Send them this invite link!", color=colors["GGblue"])
           invitationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803780490255532042/inviteapproved.png")
           invitationEmbed.set_footer(text="Link is one-time use and will expire in 12 hours.")
           # Generate a new invite link
@@ -143,14 +153,14 @@ class Community(commands.Cog):
       
         elif approves < disapproves:
           # Inform the mods of the final decision using an embed
-          modResultsEmbed = discord.Embed(title="Invite not approved!", description=f"An invite will not be sent for {user.name}!", color=GGred)
+          modResultsEmbed = discord.Embed(title="Invite not approved!", description=f"An invite will not be sent for {user.name}!", color=colors["GGred"])
           modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284827188756510/invitedisapproved.png")
           modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
           modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
           await modChannel.send(embed=modResultsEmbed)
         
           # Inform the initiator of the final decision
-          initiatorResultsEmbed = discord.Embed(title=f"Your invite for {user.name} was not approved!", description="An invite will not be sent, but you may try inviting them again at any time!", color=GGred)
+          initiatorResultsEmbed = discord.Embed(title=f"Your invite for {user.name} was not approved!", description="An invite will not be sent, but you may try inviting them again at any time!", color=colors["GGred"])
           initiatorResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284827188756510/invitedisapproved.png")
           await initiator.send(embed=initiatorResultsEmbed)
 
@@ -178,22 +188,22 @@ class Community(commands.Cog):
 
       # Get the correct information using the IDs from the two servers
       if ctx.guild.name == "GlitchBot's Home":
-        modChannel = self.client.get_channel(gbhModChannel)
-        joinChannel = self.client.get_channel(gbhJoinChannel)
-        yesEmoji = self.client.get_emoji(802964584868085770)
-        noEmoji = self.client.get_emoji(802964584683012137)
-        modRole = ctx.guild.get_role(801301557093728265)
-        adminRole = ctx.guild.get_role(801301846446178366)
+        modChannel = self.client.get_channel(channels["gbhMod"])
+        joinChannel = self.client.get_channel(channels["gbhJoin"])
+        yesEmoji = self.client.get_emoji(emojis["gbhYes"])
+        noEmoji = self.client.get_emoji(emojis["gbhNo"])
+        modRole = ctx.guild.get_role(roles["gbhMods"])
+        adminRole = ctx.guild.get_role(roles["gbhAdmins"])
       elif ctx.guild.name == "Glitched Gaming":
-        modChannel = self.client.get_channel(ggModChannel)
-        joinChannel = self.client.get_channel(ggJoinChannel)
-        yesEmoji = self.client.get_emoji(779855811480387635)
-        noEmoji = self.client.get_emoji(779855943130546196)
-        modRole = ctx.guild.get_role(769175358779162647)
-        adminRole = ctx.guild.get_role(769176118213083166)
+        modChannel = self.client.get_channel(channels["ggMod"])
+        joinChannel = self.client.get_channel(channels["ggJoin"])
+        yesEmoji = self.client.get_emoji(emojis["ggYes"])
+        noEmoji = self.client.get_emoji(emojis["ggNo"])
+        modRole = ctx.guild.get_role(roles["ggMods"])
+        adminRole = ctx.guild.get_role(roles["ggAdmins"])
 
       # Send a confirmation embed to the mod channel and add the reactions
-      inviteConfirmEmbed = discord.Embed(title="React to approve or disapprove!", color = GGpurple)
+      inviteConfirmEmbed = discord.Embed(title="React to approve or disapprove!", color = colors["GGpurple"])
       inviteConfirmEmbed.set_author(name=f"{ctx.message.author.name} wants to invite the {serverName.title()} server", icon_url=ctx.message.author.avatar_url)
       inviteConfirmEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284828870410280/invitepending.png")
       inviteConfirmEmbed.set_footer(text="Confirmation will end in 10 minutes")
@@ -230,25 +240,25 @@ class Community(commands.Cog):
       
       if (approves == disapproves) and (approves > 1 and disapproves > 1):
         # Inform the mods of the final decision using an embed
-        modResultsEmbed = discord.Embed(title="There was a tie!", description=f"An invite will not be sent to the {serverName.title()} server.", color=GGpurple)
+        modResultsEmbed = discord.Embed(title="There was a tie!", description=f"An invite will not be sent to the {serverName.title()} server.", color=colors["GGpurple"])
         modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284824822382633/invitecontroversial.png")
         modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
         modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
         await modChannel.send(embed=modResultsEmbed)
 
         # Inform the initiator of the final decision
-        initiatorResultsEmbed = discord.Embed(title=f"Your invite for {serverName.title()} resulted in a tie!", description="An invite will not be sent, but you may try inviting the server again at any time!", color=GGpurple)
+        initiatorResultsEmbed = discord.Embed(title=f"Your invite for {serverName.title()} resulted in a tie!", description="An invite will not be sent, but you may try inviting the server again at any time!", color=colors["GGpurple"])
         initiatorResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284824822382633/invitecontroversial.png")
         await initiator.send(embed=initiatorResultsEmbed)
 
       elif (approves == 1 and disapproves == 1):
         # Inform the mods of the final decision using an embed
-        modResultsEmbed = discord.Embed(title="Nobody responded!", description=f"An invite will be sent for the {serverName.title()} server!", color=GGpurple)
+        modResultsEmbed = discord.Embed(title="Nobody responded!", description=f"An invite will be sent for the {serverName.title()} server!", color=colors["GGpurple"])
         modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803780487453736990/inviteautoapproved.png")
         await modChannel.send(embed=modResultsEmbed)
         
         # Inform the initiator of the final decision
-        invitationEmbed = discord.Embed(title=f"Your invite for {serverName.title()} was auto-approved!", description="Use this invite link to invite them!", color=GGpurple)
+        invitationEmbed = discord.Embed(title=f"Your invite for {serverName.title()} was auto-approved!", description="Use this invite link to invite them!", color=colors["GGpurple"])
         invitationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803780487453736990/inviteautoapproved.png")
         invitationEmbed.set_footer(text="Link will expire in 24 hours.")
 
@@ -259,14 +269,14 @@ class Community(commands.Cog):
 
       elif approves > disapproves:
         # Inform the mods of the final decision using an embed
-        modResultsEmbed = discord.Embed(title="Invite approved!", description=f"An invite will be sent for the {serverName.title()} server!", color=GGblue)
+        modResultsEmbed = discord.Embed(title="Invite approved!", description=f"An invite will be sent for the {serverName.title()} server!", color=colors["GGblue"])
         modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803780490255532042/inviteapproved.png")
         modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
         modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
         await modChannel.send(embed=modResultsEmbed)
         
         # Inform the initiator of the final decision
-        invitationEmbed = discord.Embed(title=f"Your invite for {serverName.title()} was approved!", description="Use this link to invite them!", color=GGblue)
+        invitationEmbed = discord.Embed(title=f"Your invite for {serverName.title()} was approved!", description="Use this link to invite them!", color=colors["GGblue"])
         invitationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803780490255532042/inviteapproved.png")
         invitationEmbed.set_footer(text="Link will expire in 12 hours.")
 
@@ -277,14 +287,14 @@ class Community(commands.Cog):
       
       elif approves < disapproves:
         # Inform the mods of the final decision using an embed
-        modResultsEmbed = discord.Embed(title="Invite not approved!", description=f"An invite will not be sent for the {serverName.title()} server!", color=GGred)
+        modResultsEmbed = discord.Embed(title="Invite not approved!", description=f"An invite will not be sent for the {serverName.title()} server!", color=colors["GGred"])
         modResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284827188756510/invitedisapproved.png")
         modResultsEmbed.add_field(name="Approves:", value=approves-1, inline=True)
         modResultsEmbed.add_field(name="Disapproves:", value=disapproves-1, inline=True)
         await modChannel.send(embed=modResultsEmbed)
         
         # Inform the initiator of the final decision
-        initiatorResultsEmbed = discord.Embed(title=f"Your invite for {serverName.title()} was not approved!", description="An invite will not be sent, but you may try inviting them again at any time!", color=GGred)
+        initiatorResultsEmbed = discord.Embed(title=f"Your invite for {serverName.title()} was not approved!", description="An invite will not be sent, but you may try inviting them again at any time!", color=colors["GGred"])
         initiatorResultsEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284827188756510/invitedisapproved.png")
         await initiator.send(embed=initiatorResultsEmbed)
 
@@ -296,18 +306,17 @@ class Community(commands.Cog):
   @commands.command()
   async def event(self, ctx, name: str, desc: str, game: str, startTime: str):
     if ctx.guild.name == "GlitchBot's Home":
-      eventChannel = self.client.get_channel(gbhEventChannel)
-      yesEmoji = self.client.get_emoji(802964584868085770)
-      maybeEmoji = self.client.get_emoji(805245198686879804)
-      noEmoji = self.client.get_emoji(802964584683012137)
+      eventChannel = self.client.get_channel(channels["gbhEvent"])
+      yesEmoji = self.client.get_emoji(emojis["gbhYes"])
+      maybeEmoji = self.client.get_emoji(emojis["gbhMaybe"])
+      noEmoji = self.client.get_emoji(emojis["gbhNo"])
     elif ctx.guild.name == "Glitched Gaming":
-      eventChannel = self.client.get_channel(ggEventChannel)
-      joinChannel = self.client.get_channel(ggJoinChannel)
-      yesEmoji = self.client.get_emoji(779855811480387635)
-      maybeEmoji = self.client.get_emoji(779856557432504330)
-      noEmoji = self.client.get_emoji(779855943130546196)
+      eventChannel = self.client.get_channel(channels["ggEvent"])
+      yesEmoji = self.client.get_emoji(emojis["ggYes"])
+      maybeEmoji = self.client.get_emoji(emojis["ggMaybe"])
+      noEmoji = self.client.get_emoji(emojis["ggNo"])
     
-    eventEmbed = discord.Embed(title=name, description=desc, color=GGblue)
+    eventEmbed = discord.Embed(title=name, description=desc, color=colors["GGblue"])
     eventEmbed.set_author(name=f"{ctx.message.author.display_name} is hosting an event", icon_url=ctx.message.author.avatar_url)
     eventEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/805241983286247424/eventcreated.png")
     eventEmbed.add_field(name="Game:", value=game, inline=True)
@@ -326,11 +335,11 @@ class Community(commands.Cog):
   async def cancelEvent(self, ctx, *, name: str):
     if ((("ID For Event " + name) in db) and (ctx.message.author.id == db["Host ID For Event " + name])) and (db["ID For Event " + name] != None):
       if ctx.guild.name == "GlitchBot's Home":
-        eventChannel = self.client.get_channel(gbhEventChannel)
+        eventChannel = self.client.get_channel(channels["gbhEvent"])
       elif ctx.guild.name == "Glitched Gaming":
-        eventChannel = self.client.get_channel(ggEventChannel)
+        eventChannel = self.client.get_channel(channels["ggEvent"])
       
-      cancellationEmbed = discord.Embed(title=f"{name} has been cancelled!", description="Stay tuned for more events!", color=GGred)
+      cancellationEmbed = discord.Embed(title=f"{name} has been cancelled!", description="Stay tuned for more events!", color=colors["GGred"])
       cancellationEmbed.set_author(name=f"{ctx.message.author.display_name} cancelled an event", icon_url=ctx.message.author.avatar_url)
       cancellationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/805280828153528330/eventcancelled.png")
 
@@ -359,9 +368,9 @@ class Community(commands.Cog):
     
     if ((("ID For Event " + name) in db) and (db["ID For Event " + name] != None)) and hostOrMod:
       if ctx.guild.name == "GlitchBot's Home":
-        eventChannel = self.client.get_channel(gbhEventChannel)
+        eventChannel = self.client.get_channel(channels["gbhEvent"])
       elif ctx.guild.name == "Glitched Gaming":
-        eventChannel = self.client.get_channel(ggEventChannel)
+        eventChannel = self.client.get_channel(channels["ggEvent"])
       
       eventMessage = await eventChannel.fetch_message(db["ID For Event " + name])
       await eventMessage.delete()
@@ -379,11 +388,11 @@ class Community(commands.Cog):
   async def rescheduleEvent(self, ctx, name: str, startTime: str):
     if ((("ID For Event " + name) in db) and (ctx.message.author.id == db["Host ID For Event " + name])) and (db["ID For Event " + name] != None):
       if ctx.guild.name == "GlitchBot's Home":
-        eventChannel = self.client.get_channel(gbhEventChannel)
+        eventChannel = self.client.get_channel(channels["gbhEvent"])
       elif ctx.guild.name == "Glitched Gaming":
-        eventChannel = self.client.get_channel(ggEventChannel)
+        eventChannel = self.client.get_channel(channels["ggEvent"])
       
-      rescheduleEmbed = discord.Embed(title=f"{name} has been rescheduled to {startTime}!", color=GGpurple)
+      rescheduleEmbed = discord.Embed(title=f"{name} has been rescheduled to {startTime}!", color=colors["GGpurple"])
       rescheduleEmbed.set_author(name=f"{ctx.message.author.display_name} rescheduled an event", icon_url=ctx.message.author.avatar_url)
       rescheduleEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/809591752926953504/eventrescheduled.png")
 

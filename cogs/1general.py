@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from replit import db
 import datetime
-import os
 import json
 
 # Store necessary info locally from JSON and env files
