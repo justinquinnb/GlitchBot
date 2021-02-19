@@ -177,6 +177,7 @@ class General(commands.Cog):
     bugReportEmbed.set_footer(text=f"Report made on {(datetime.datetime.now()).strftime('%x at %X')}")
 
     await devChannel.send(content=f"{devRole.mention}", embed=bugReportEmbed)
+    await ctx.send("**The developers have received your report.** Thanks for submitting the issue!")
 
   # Suggestion command
   @commands.command()
@@ -192,6 +193,7 @@ class General(commands.Cog):
     suggestionEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/809597548523552788/suggestion.png")
 
     await devChannel.send(content=f"{devRole.mention}", embed=suggestionEmbed)
+    await ctx.send("**The developers have received your suggestion.** Thanks for submitting your idea!")
 
 def setup(client):
   client.add_cog(General(client))
