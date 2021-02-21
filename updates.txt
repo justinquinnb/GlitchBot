@@ -1,7 +1,13 @@
 v0.0.6
-x/x/x
-The ??? Update
-✓ 
+2/21/21
+The Developer Update
+✓ Members of power can now use the `;;report` command to anonymously report a member of power directly to the owners
+✓ Added the ability to include a command name in `;;help` for more detailed info about the specified command
+✓ Ban vote embeds now display the reason for banning the user rather than posting it in the audit log
+✓ Streamlined global variable management through JSON integration
+✓ Added much-needed version control through Git
+✓ Moved project management over to Trello
+✓ Cleaned up the code and improved its documentation
 
 --------------------
 

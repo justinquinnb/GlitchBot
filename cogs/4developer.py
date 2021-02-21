@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import datetime
 from replit import db
 
 # Denotes this code as a class of commands under the name General and initializes it
@@ -10,8 +9,20 @@ class Developer(commands.Cog):
 
     # Gives this cog the attributes needed for the auto help command.
     self.parameters = ["<channelID>", "<message>"]
-    self.descriptions = ["Sets the puppet stage.", "Puppets the bot."]
 
+    self.shortDescs = ["Sets the puppet stage.", "Puppets the bot."]
+
+    self.longDescs = [
+      "Allows developers to set the channel in which puppet messages will be sent to.",
+      "Allows developers to send the included message to the stage channel as a gag."]
+
+    self.paramDescs = [
+    "`<channelID>` The ID of the channel to set as the stage.",
+    "`<message>` The message you would like to send to the channel."]
+
+    self.restrictions = ["Only developers", "Only developers"]
+
+  # Gag puppet staging command
   @commands.command()
   @commands.has_role("Developers")
   async def puppetStage(self, ctx, serverID: int, channelID: int):
@@ -25,6 +36,7 @@ class Developer(commands.Cog):
     except:
       await ctx.send("**You must include valid server and channel IDs!**")
 
+  # Gag puppet command
   @commands.command()
   @commands.has_role("Developers")
   async def puppet(self, ctx, *, text: str):
