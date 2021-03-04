@@ -22,14 +22,11 @@ class Developer(commands.Cog):
 
     self.restrictions = ["Only developers", "Only developers"]
 
-<<<<<<< HEAD:cogs/5developer.py
   # Check for admin level or above
   def isDev(ctx):
     devs = [335440648393981952, 485182871867359255, 326453148178710530]
     return ctx.message.author.id in devs
 
-=======
->>>>>>> origin/master:cogs/4developer.py
   # Gag puppet staging command
   @commands.command()
   @commands.check(isDev)

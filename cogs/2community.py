@@ -53,19 +53,11 @@ class Community(commands.Cog):
       "Opens a vote for mods and admins to approve your invitation. The vote will close after 10 minutes and will act according to the final results. If nobody votes or there is a majority approval, a 24 hour, 25 use limit invite link will be sent to your DMs so you can send it to your server. If the vote ends in a tie or has a majority disapproval, you will not receive an invite link.",
       "Pings everyone in an embed to the events channel and automatically adds RSVP reactions to get an idea of who will be participating in the event.",
       "Cancels the specified event and informs everyone of the cancellation in the event channel.",
-<<<<<<< HEAD
       "Deletes the specified event but does not inform people of its removal.",
       "Pings everyone in an embed that indicates the event that has been rescheduled and the new time it's taking place."]
 
     self.paramDescs = [
       "`<userID>` The ID of a user obtained by right-clicking a user's avatar and selecting Copy ID.\n`<name>` The user's actual name so we know who they are.",
-=======
-      "Deletes the specified event but does not inform people of its deletion.",
-      "Pings everyone in an embed that indicates the event that has been rescheduled and the new time it's taking place."]
-
-    self.paramDescs = [
-      "`<userID>` The ID of a user obtained by right-clicking a user's avatar and selecting Copy ID.\n`<name>`The user's actual name so we know who they are.",
->>>>>>> origin/master
       "`<serverName>` The name of the server you'd be sending the invite link to.",
       "`<name>` The name of the event you are hosting.\n`<desc>` A brief description of the event.\n`<game>` The name of the game you will be playing.\n`<time>` The time the event will take place (including time zone).",
       "`<name>` The exact name of the event you wish to cancel.",
@@ -373,10 +365,7 @@ class Community(commands.Cog):
   # Event cancellation command
   @commands.command()
   async def cancelEvent(self, ctx, *, name: str):
-<<<<<<< HEAD
     name = clearPunctuation(name)
-=======
->>>>>>> origin/master
     # Ensure the specified event exists and the cancellee is the host before proceeding
     if ((("ID For Event " + name) in db) and (ctx.message.author.id == db["Host ID For Event " + name])) and (db["ID For Event " + name] != None):
       # Get the correct information using the IDs from the two servers
@@ -405,11 +394,8 @@ class Community(commands.Cog):
   # Event deletion command
   @commands.command()
   async def deleteEvent(self, ctx, *, name: str):
-<<<<<<< HEAD
     name = clearPunctuation(name)
     
-=======
->>>>>>> origin/master
     # Ensure the person deleting the event is either its host or a member of power
     hostOrMod = False
     if ctx.message.author.id == db["Host ID For Event " + name]:
@@ -439,11 +425,8 @@ class Community(commands.Cog):
   # Event rescheduling command
   @commands.command()
   async def rescheduleEvent(self, ctx, name: str, startTime: str):
-<<<<<<< HEAD
     name = clearPunctuation(name)
     
-=======
->>>>>>> origin/master
     # Ensure the person deleting the event is its host
     if ((("ID For Event " + name) in db) and (ctx.message.author.id == db["Host ID For Event " + name])) and (db["ID For Event " + name] != None):
       # Get the correct information using the IDs from the two servers

@@ -73,11 +73,7 @@ class Moderation(commands.Cog):
       "`<@user>` Ping the user or include their exact user name and 4-digit ID number.\n`<reason>` The reason for the ban.",
       "`<numOfMessages>` The number of messages you'd like to delete.",
       "`<@user>` Ping the user or include their exact user name and 4-digit ID number.\n`<reason>` The reason for the warning.",
-<<<<<<< HEAD:cogs/4moderation.py
       "`<@user>` Ping the user or include their exact user name and 4-digit ID number.",
-=======
-      "`<@user>` Ping the user or include their exact user name and 4-digit ID number."
->>>>>>> origin/master:cogs/3moderation.py
       "`<@user>` Ping the user or include their exact user name and 4-digit ID number.\n`<reason>` The reason for reporting the user."]
     
     self.restrictions = ["Only mods", "Only members of power", "Only members of power",
@@ -145,11 +141,7 @@ class Moderation(commands.Cog):
         
         # Send a confirmation embed to the mod channel and add the reactions
         banConfirmEmbed = discord.Embed(title="React to approve or disapprove!", description=reason, color = colors["GGpurple"])
-<<<<<<< HEAD:cogs/4moderation.py
         banConfirmEmbed.set_author(name=f"{ctx.message.author.display_name} wants to ban {user.display_name}", icon_url=ctx.message.author.avatar_url)
-=======
-        banConfirmEmbed.set_author(name=f"{ctx.message.author.name} wants to ban {user.name}", icon_url=ctx.message.author.avatar_url)
->>>>>>> origin/master:cogs/3moderation.py
         banConfirmEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804383266635382854/memberbanpending.png")
         banConfirmEmbed.set_footer(text="Confirmation will end in 30 minutes")
 
@@ -325,7 +317,6 @@ class Moderation(commands.Cog):
       await response.delete()
     else:
       # Create a report embed and send it to the owners
-<<<<<<< HEAD:cogs/4moderation.py
       reportEmbed = discord.Embed(title=f"{user.display_name} was reported in {ctx.guild.name} for:", description=reason, color=colors["GGred"])
       reportEmbed.set_author(name=f"{ctx.message.author.display_name} made a report", icon_url=ctx.message.author.avatar_url)
       reportEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/816675512989515846/warning.png")
@@ -344,23 +335,6 @@ class Moderation(commands.Cog):
       await justinDM.send(embed=reportEmbed)
       await jacobDM.send(embed=reportEmbed)
       response = await ctx.send(f"**{user.display_name} was reported to the owners!** This exchange will be deleted in 3 seconds.")
-=======
-      reportEmbed = discord.Embed(title=f"{user.name} was reported in {ctx.guild.name} for...", description=reason, color=colors["GGred"])
-      reportEmbed.set_author(name=f"{ctx.message.author.name} made a report", icon_url=ctx.message.author.avatar_url)
-      reportEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/804537971994263592/warning.png")
-      
-      justinID = 335440648393981952
-      jacobID = 456988979133284353
-
-      justin = self.client.get_user(justinID)
-      jacob = self.client.get_user(jacobID)
-      justinDM = justin.dm_channel
-      jacobDM = jacob.dm_channel
-      
-      await justinDM.send(content=f"**{modRole.mention} s and {adminRole.mention} s:**", embed=reportEmbed)
-      await jacobDM.send(content=f"**{modRole.mention} s and {adminRole.mention} s:**", embed=reportEmbed)
-      response = await ctx.send(f"**{user.name} was reported to the owners!** This exchange will be deleted in 3 seconds.")
->>>>>>> origin/master:cogs/3moderation.py
 
       await asyncio.sleep(3)
       await ctx.message.delete()

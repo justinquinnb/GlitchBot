@@ -66,15 +66,9 @@ groups = ["Developer", "Developer", "Developer", "Developer", "Developer",
 names = ["forceStop", "clearDB", "unloadCog", "loadCog", "unloadCogs",
 "loadCogs", "help"]
 
-<<<<<<< HEAD
 parameters = ["(code)", "(code)", "<cogName>", "<cogName>", "", "", "(commandName)"]
 
 shortDescs = ["Force stops the bot.", "Clears the database.", "Unloads the specified cog.",
-=======
-parameters = ["(code)","<cogName>", "<cogName>", "", "", "(commandName)"]
-
-shortDescs = ["Force stops the bot.", "Unloads the specified cog.",
->>>>>>> origin/master
 "Loads the specified cog.", "Unloads all cogs.", "Loads all cogs.",
 "Displays command info."]
 
@@ -95,23 +89,6 @@ paramDescs = [
   "", "", "`(commandName)` The exact name of a command (excluding prefix) only required for command-specific help."]
 
 restrictions = ["Only developers", "Only developers", "Only developers", "Only developers", "Only developers",
-"Only developers", "Anyone"]
-
-longDescs = [
-  "Upon initiation, provides a random 6-digit code that must be entered alongside the command again to force stop, or power off, the bot. After successful confirmation, the bot will shut down within 5 minutes.",
-  "Unloads the specified cog (or group of commands).",
-  "Loads the specified cog (or group of commands).",
-  "Unloads all currently loaded cogs (or groups of commands).",
-  "Loads all currently unloaded cogs (or groups of commands).",
-  "If a certain command is not specified, a list of active commands along with their parameters and brief descriptions is displayed. If a certain command is specified, displays a more detailed explanation of its use, parameters, and restrictions."]
-
-paramDescs = [
-  "`(code)` The 6-digit code only required to confirm a force stop. Included in the initiation message.",
-  "`(cogName)` The exact name of a cog (or category name).",
-  "`(cogName)` The exact name of a cog (or category name).",
-  "", "", "`(commandName)` The exact name of a command (excluding prefix) only required for command-specific help."]
-
-restrictions = ["Only developers", "Only developers", "Only developers", "Only developers",
 "Only developers", "Anyone"]
 
 # STARTUP ------------------------------------------------------------------
@@ -175,28 +152,17 @@ async def on_member_ban(guild, member):
 # COMMANDS ------------------------------------------------------------------
 # Command for force stopping the bot
 @client.command()
-<<<<<<< HEAD
 @commands.check(isDev)
 async def forceStop(ctx, inputCode:str= None):
   # If a force stop is not already in progress, reset force stop info and initiate the process
   if inputCode == None and (("forceStop Confirmation Code" not in db) or (db["forceStop Confirmation Code"] == None)):
-=======
-@commands.has_role("Developers")
-async def forceStop(ctx, inputCode=None):
-  # If a force stop is not already in progress, reset force stop info and initiate the process
-  if inputCode == None and db["forceStop Confirmation Code"] == None:
->>>>>>> origin/master
     # Reset database info regarding the force stop process
     db["forceStop Confirmed"] = False
     db["forceStop Confirmation Code"] = randomCode(6)
     db["forceStop Confirmation Message ID"] = None
 
     # Log the initiation and message the channel with confirmation instructions
-<<<<<<< HEAD
     print("Force stop initiated by " + ctx.message.author.display_name + ". Code: " + db["forceStop Confirmation Code"])
-=======
-    print("Force stop initiated by " + ctx.message.author.name + ". Code: " + db["forceStop Confirmation Code"])
->>>>>>> origin/master
     confirmation = await ctx.send(f"**You are about to force stop BetaBot**. Send the command again with the code...\n`{db['forceStop Confirmation Code']}`\n...to confirm. The code expires in **10** seconds.")
     db["forceStop Confirmation Message ID"] = confirmation.id
 
@@ -399,11 +365,7 @@ async def help(ctx, inputCommand:str = None):
     # Ensure the help command is displayed regardless of whether or not the general cog
     # is loaded
     if "General" not in client.cogs:
-<<<<<<< HEAD
       helpEmbed.add_field(name="General", value="`;;help (commandName)` Displays command info.", inline=False)
-=======
-      helpEmbed.add_field(name="General", value="`;;help` Displays this message.", inline=False)
->>>>>>> origin/master
 
     # Iterate through all the loaded cogs
     for cogName in client.cogs:
@@ -480,15 +442,9 @@ async def help(ctx, inputCommand:str = None):
       # Retrieve the specified command information and add it to an embed
       if commandLocation == "Main":
         if parameters[commandIndex] != "":
-<<<<<<< HEAD
           helpEmbed = discord.Embed(title=f"!!{commandName} {parameters[commandIndex]}", color=colors["GGpurple"])
         else:
           helpEmbed = discord.Embed(title=f"!!{commandName}", color=colors["GGpurple"])
-=======
-          helpEmbed = discord.Embed(title=f";;{commandName} {parameters[commandIndex]}", color=colors["GGpurple"])
-        else:
-          helpEmbed = discord.Embed(title=f";;{commandName}", color=colors["GGpurple"])
->>>>>>> origin/master
         
         helpEmbed.add_field(name="Description:", value=longDescs[commandIndex], inline=False)
         
@@ -498,15 +454,9 @@ async def help(ctx, inputCommand:str = None):
         helpEmbed.add_field(name="Restrictions:", value=f"{restrictions[commandIndex]} can use this command.", inline=False)
       elif commandLocation != "Main":
         if commandLocation.parameters[commandIndex] != "":
-<<<<<<< HEAD
           helpEmbed = discord.Embed(title=f"!!{commandName} {commandLocation.parameters[commandIndex]}", color=colors["GGpurple"])
         else:
           helpEmbed = discord.Embed(title=f"!!{commandName}", color=colors["GGpurple"])
-=======
-          helpEmbed = discord.Embed(title=f";;{commandName} {commandLocation.parameters[commandIndex]}", color=colors["GGpurple"])
-        else:
-          helpEmbed = discord.Embed(title=f";;{commandName}", color=colors["GGpurple"])
->>>>>>> origin/master
         
         helpEmbed.add_field(name="Description:", value=commandLocation.longDescs[commandIndex], inline=False)
 
