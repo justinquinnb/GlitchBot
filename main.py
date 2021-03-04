@@ -90,6 +90,23 @@ paramDescs = [
 
 restrictions = ["Only developers", "Only developers", "Only developers", "Only developers", "Only developers", "Only developers", "Anyone"]
 
+longDescs = [
+  "Upon initiation, provides a random 6-digit code that must be entered alongside the command again to force stop, or power off, the bot. After successful confirmation, the bot will shut down within 5 minutes.",
+  "Unloads the specified cog (or group of commands).",
+  "Loads the specified cog (or group of commands).",
+  "Unloads all currently loaded cogs (or groups of commands).",
+  "Loads all currently unloaded cogs (or groups of commands).",
+  "If a certain command is not specified, a list of active commands along with their parameters and brief descriptions is displayed. If a certain command is specified, displays a more detailed explanation of its use, parameters, and restrictions."]
+
+paramDescs = [
+  "`(code)` The 6-digit code only required to confirm a force stop. Included in the initiation message.",
+  "`(cogName)` The exact name of a cog (or category name).",
+  "`(cogName)` The exact name of a cog (or category name).",
+  "", "", "`(commandName)` The exact name of a command (excluding prefix) only required for command-specific help."]
+
+restrictions = ["Only developers", "Only developers", "Only developers", "Only developers",
+"Only developers", "Anyone"]
+
 # STARTUP ------------------------------------------------------------------
 
 print("[STARTUP] Starting up...\n[STARTUP] Loading cogs...")
