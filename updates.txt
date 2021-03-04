@@ -1,7 +1,31 @@
+v0.0.7
+3/3/21
+The Roles and Polls Update
+✓ Added the Interactive cog to house the poll and role menu commands.
+✓ Added the `;;poll` command to create custom, embed-based reaction polls.
+✓ Added the  `;;closePoll` command to delete the original poll and display results.
+✓ Added the `;;deletePoll` command to allow pollers and members of power to delete polls without displaying results.
+✓ Added the `;;clearDB` command so developers can clear the bot's database if memory problems arise.
+✓ Added the `;;menu` command to create highly customizable role menu embeds.
+✓ Added the `;;convertMenu` command to convert premade role menus (such as those from other bots) into ones that work with GlitchBot.
+✓ Added the `;;removeMenu` command to remove role menu functionality from a message without deleting it.
+✓ Added the `;;deleteMenu` command to delete a role menu.
+✓ Added an additional heads-up for members of power when a user has received more than five warnings.
+✓ Adjusted embed icon scaling for better consistency.
+✓ Squashed some bugs and found some glitches.
+
+--------------------
+
 v0.0.6
-x/x/x
-The ??? Update
-✓ 
+2/21/21
+The Developer Update
+✓ Members of power can now use the `;;report` command to anonymously report a member of power directly to the owners.
+✓ Added the ability to include a command name in `;;help` for more detailed info about the specified command.
+✓ Ban vote embeds now display the reason for banning the user rather than posting it in the audit log.
+✓ Streamlined global variable management through JSON integration.
+✓ Added much-needed version control through Git.
+✓ Moved project management over to Trello.
+✓ Cleaned up the code and improved its documentation.
 
 --------------------
 

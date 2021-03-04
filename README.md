@@ -6,7 +6,7 @@ BetaBot is the developmental companion to GlitchBot, a custom-made Discord bot f
 BetaBot is currently, and will likely forever be, in development. Being GlitchBot's developmental companion, testing will always take place on BetaBot before changes and features are finalized and ready to be published in the (mostly) stable, active GlitchBot.
 
 ### Contributors
-* Justin Q., Developer
+* Justin Q., Lead Developer
 * Musa E., Asst. Developer/Tester
 * Briana F., Tester
 

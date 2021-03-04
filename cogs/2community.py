@@ -5,29 +5,34 @@ import asyncio
 import datetime
 import json
 
-# Store necessary info locally from JSON and env files
+# Store necessary info locally from the JSON file
 with open('globalVars.json', 'r') as jsonFile:
   globalVars = json.load(jsonFile)
 
-# Store color codes
 colors = {}
 for color in globalVars["embedColors"]:
   colors[color["color"]] = int(color["hex"], 0)
 
-# Store channel IDs
 channels = {}
 for channel in globalVars["channelIDs"]:
   channels[channel["channel"]] = channel["ID"]
 
-# Store role IDs
 roles = {}
 for role in globalVars["roleIDs"]:
   roles[role["role"]] = role["ID"]
 
-# Store emoji IDs
 emojis = {}
 for emoji in globalVars["emojiIDs"]:
   emojis[emoji["emoji"]] = emoji["ID"]
+
+# Function for removing punctuation from parts of db keys
+def clearPunctuation(string):
+  punctuation = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+  for character in string:
+    if character in punctuation:
+      string = string.replace(character, "")
+  
+  return string
 
 # Denotes this code as a class of commands under the name Community and initializes it
 class Community(commands.Cog):
@@ -36,16 +41,37 @@ class Community(commands.Cog):
     
     # Gives this cog the attributes needed for the auto help command.
     self.parameters = ["<userID> <name>", "<serverName>",
-    "<name> <description> <game> <time>", "<eventName>", "<eventName>",
+    "<name> <desc> <game> <time>", "<eventName>", "<eventName>",
     "<eventName> <time>"]
-    self.descriptions = ["Creates an invite link for a user.",
+
+    self.shortDescs = ["Creates an invite link for a user.",
     "Creates an invite link for a server.", "Creates a new event.",
     "Cancels an event.", "Deletes an event.", "Reschedules an event."]
+
+    self.longDescs = [
+      "Opens a vote for mods and admins to approve your invitation. The vote will close after 10 minutes and will act according to the final results. If nobody votes or there is a majority approval, a 12-hour invite link will be sent to your DMs so you can send it to your friend. If the vote ends in a tie or has a majority disapproval, you will not receive an invite link.",
+      "Opens a vote for mods and admins to approve your invitation. The vote will close after 10 minutes and will act according to the final results. If nobody votes or there is a majority approval, a 24 hour, 25 use limit invite link will be sent to your DMs so you can send it to your server. If the vote ends in a tie or has a majority disapproval, you will not receive an invite link.",
+      "Pings everyone in an embed to the events channel and automatically adds RSVP reactions to get an idea of who will be participating in the event.",
+      "Cancels the specified event and informs everyone of the cancellation in the event channel.",
+      "Deletes the specified event but does not inform people of its removal.",
+      "Pings everyone in an embed that indicates the event that has been rescheduled and the new time it's taking place."]
+
+    self.paramDescs = [
+      "`<userID>` The ID of a user obtained by right-clicking a user's avatar and selecting Copy ID.\n`<name>` The user's actual name so we know who they are.",
+      "`<serverName>` The name of the server you'd be sending the invite link to.",
+      "`<name>` The name of the event you are hosting.\n`<desc>` A brief description of the event.\n`<game>` The name of the game you will be playing.\n`<time>` The time the event will take place (including time zone).",
+      "`<name>` The exact name of the event you wish to cancel.",
+      "`<name>` The exact name of the event you wish to delete.",
+      "`<name>` The exact name of the event you wish to reschedule.\n`<time>` The new time the event will take place (including time zone)."
+    ]
+
+    self.restrictions = ["Anyone", "Anyone", "Anyone", "Only the host of the event", "Only the host of the event or a member of power ", "Only the host of the event"]
   
   # Personal invite command
   @commands.command()
   async def invite(self, ctx, userID: int, name: str):
     try:
+      # Ensure an invite isn't already pending for the user before proceeding
       user = await self.client.fetch_user(userID)
       if ((("Personal Invite Pending For " + str(user.id)) not in db) or (db["Personal Invite Pending For " +  str(user.id)] == False)) and (user not in ctx.guild.members):
         db["Personal Invite Pending For " + str(user.id)] = True
@@ -71,7 +97,7 @@ class Community(commands.Cog):
 
         # Send a confirmation embed to the mod channel and add the reactions
         inviteConfirmEmbed = discord.Embed(title="React to approve or disapprove!", color=colors["GGpurple"])
-        inviteConfirmEmbed.set_author(name=f"{ctx.message.author.name} wants to invite {user.name} ({name})", icon_url=ctx.message.author.avatar_url)
+        inviteConfirmEmbed.set_author(name=f"{ctx.message.author.display_name} wants to invite {user.name} ({name})", icon_url=ctx.message.author.avatar_url)
         inviteConfirmEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284828870410280/invitepending.png")
         inviteConfirmEmbed.set_footer(text="Confirmation will end in 10 minutes")
 
@@ -105,6 +131,7 @@ class Community(commands.Cog):
       
         initiator = ctx.message.author
       
+        # React appropriately according to the final vote results
         if (approves == disapproves) and (approves > 1 and disapproves > 1):
           # Inform the mods of the final decision using an embed
           modResultsEmbed = discord.Embed(title="There was a tie!", description=f"An invite will not be sent for {user.name}.", color=colors["GGpurple"])
@@ -176,10 +203,10 @@ class Community(commands.Cog):
     except:
       pass
 
-
   # Server invite command
   @commands.command()
   async def massInvite(self, ctx, *, serverName: str):
+    # Ensure an invite isn't already pending for the server before proceeding
     if (("Server Invite Pending For " + serverName.title()) not in db) or ((db["Server Invite Pending For " +  serverName.title()]) == False):
       db["Server Invite Pending For " + serverName.title()] = True
 
@@ -204,7 +231,7 @@ class Community(commands.Cog):
 
       # Send a confirmation embed to the mod channel and add the reactions
       inviteConfirmEmbed = discord.Embed(title="React to approve or disapprove!", color = colors["GGpurple"])
-      inviteConfirmEmbed.set_author(name=f"{ctx.message.author.name} wants to invite the {serverName.title()} server", icon_url=ctx.message.author.avatar_url)
+      inviteConfirmEmbed.set_author(name=f"{ctx.message.author.display_name} wants to invite the {serverName.title()} server", icon_url=ctx.message.author.avatar_url)
       inviteConfirmEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/803284828870410280/invitepending.png")
       inviteConfirmEmbed.set_footer(text="Confirmation will end in 10 minutes")
 
@@ -238,6 +265,7 @@ class Community(commands.Cog):
       
       initiator = ctx.message.author
       
+      # React appropriately according to the final vote results
       if (approves == disapproves) and (approves > 1 and disapproves > 1):
         # Inform the mods of the final decision using an embed
         modResultsEmbed = discord.Embed(title="There was a tie!", description=f"An invite will not be sent to the {serverName.title()} server.", color=colors["GGpurple"])
@@ -305,6 +333,7 @@ class Community(commands.Cog):
   # Event creation command
   @commands.command()
   async def event(self, ctx, name: str, desc: str, game: str, startTime: str):
+    # Get the correct information using the IDs from the two servers
     if ctx.guild.name == "GlitchBot's Home":
       eventChannel = self.client.get_channel(channels["gbhEvent"])
       yesEmoji = self.client.get_emoji(emojis["gbhYes"])
@@ -316,6 +345,7 @@ class Community(commands.Cog):
       maybeEmoji = self.client.get_emoji(emojis["ggMaybe"])
       noEmoji = self.client.get_emoji(emojis["ggNo"])
     
+    # Create the event embed, send it, set up the reactions, and store event info
     eventEmbed = discord.Embed(title=name, description=desc, color=colors["GGblue"])
     eventEmbed.set_author(name=f"{ctx.message.author.display_name} is hosting an event", icon_url=ctx.message.author.avatar_url)
     eventEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/805241983286247424/eventcreated.png")
@@ -327,18 +357,24 @@ class Community(commands.Cog):
     await eventMessage.add_reaction(yesEmoji)
     await eventMessage.add_reaction(maybeEmoji)
     await eventMessage.add_reaction(noEmoji)
+
+    name = clearPunctuation(name)
     db["ID For Event " + name] = eventMessage.id
     db["Host ID For Event " + name] = ctx.message.author.id
 
   # Event cancellation command
   @commands.command()
   async def cancelEvent(self, ctx, *, name: str):
+    name = clearPunctuation(name)
+    # Ensure the specified event exists and the cancellee is the host before proceeding
     if ((("ID For Event " + name) in db) and (ctx.message.author.id == db["Host ID For Event " + name])) and (db["ID For Event " + name] != None):
+      # Get the correct information using the IDs from the two servers
       if ctx.guild.name == "GlitchBot's Home":
         eventChannel = self.client.get_channel(channels["gbhEvent"])
       elif ctx.guild.name == "Glitched Gaming":
         eventChannel = self.client.get_channel(channels["ggEvent"])
       
+      # Create the event embed, send it, then remove the original event embed
       cancellationEmbed = discord.Embed(title=f"{name} has been cancelled!", description="Stay tuned for more events!", color=colors["GGred"])
       cancellationEmbed.set_author(name=f"{ctx.message.author.display_name} cancelled an event", icon_url=ctx.message.author.avatar_url)
       cancellationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/805280828153528330/eventcancelled.png")
@@ -353,25 +389,28 @@ class Community(commands.Cog):
       await ctx.send("**Sorry, but that event has already been cancelled!**")
     elif ctx.message.author.id != db["Host ID For Event " + name]:
       host = self.client.get_user(db["Host ID For Event " + name])
-      await ctx.send(f"**Sorry, but only the event host can cancel that event!** Please reach out to {host.name} to do so.")
+      await ctx.send(f"**Sorry, but only the event host can cancel that event!** Please reach out to {host.display_name} to do so.")
 
   # Event deletion command
   @commands.command()
   async def deleteEvent(self, ctx, *, name: str):
+    name = clearPunctuation(name)
+    
+    # Ensure the person deleting the event is either its host or a member of power
     hostOrMod = False
-
     if ctx.message.author.id == db["Host ID For Event " + name]:
       hostOrMod = True
-    
     if (ctx.message.author.top_role.name == "Mods") or (ctx.message.author.top_role.name == "Admins" or ctx.message.author.top_role.name == "Owners"):
       hostOrMod = True
     
     if ((("ID For Event " + name) in db) and (db["ID For Event " + name] != None)) and hostOrMod:
+      # Get the correct information using the IDs from the two servers
       if ctx.guild.name == "GlitchBot's Home":
         eventChannel = self.client.get_channel(channels["gbhEvent"])
       elif ctx.guild.name == "Glitched Gaming":
         eventChannel = self.client.get_channel(channels["ggEvent"])
       
+      # Delete the original event embed and inform the user the action was performed
       eventMessage = await eventChannel.fetch_message(db["ID For Event " + name])
       await eventMessage.delete()
       await eventChannel.send(f"**{name} event was deleted.**")
@@ -381,17 +420,22 @@ class Community(commands.Cog):
     elif db["ID For Event " + name] == None:
       await ctx.send("**Sorry, but that event has already been cancelled!**")
     elif not hostOrMod:
-      await ctx.send("**Sorry, but only the event host or mods can delete that event!**")
+      await ctx.send("**Sorry, but only the event host or members of power can delete that event!**")
 
   # Event rescheduling command
   @commands.command()
   async def rescheduleEvent(self, ctx, name: str, startTime: str):
+    name = clearPunctuation(name)
+    
+    # Ensure the person deleting the event is its host
     if ((("ID For Event " + name) in db) and (ctx.message.author.id == db["Host ID For Event " + name])) and (db["ID For Event " + name] != None):
+      # Get the correct information using the IDs from the two servers
       if ctx.guild.name == "GlitchBot's Home":
         eventChannel = self.client.get_channel(channels["gbhEvent"])
       elif ctx.guild.name == "Glitched Gaming":
         eventChannel = self.client.get_channel(channels["ggEvent"])
       
+      # Create a reschedule embed and send it
       rescheduleEmbed = discord.Embed(title=f"{name} has been rescheduled to {startTime}!", color=colors["GGpurple"])
       rescheduleEmbed.set_author(name=f"{ctx.message.author.display_name} rescheduled an event", icon_url=ctx.message.author.avatar_url)
       rescheduleEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/809591752926953504/eventrescheduled.png")
@@ -402,7 +446,6 @@ class Community(commands.Cog):
     elif ctx.message.author.id != db["Host ID For Event " + name]:
       host = self.client.get_user(db["Host ID For Event " + name])
       await ctx.send(f"**Sorry, but only the event host can reschedule that event!** Please reach out to {host.name} to do so.")
-
 
 def setup(client):
   client.add_cog(Community(client))
