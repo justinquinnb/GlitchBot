@@ -39,9 +39,15 @@ class General(commands.Cog):
 
     self.longDescs = [
       "Displays an embed containing the bot's last restart, the date of its last update, its current version, and User ID.",
+<<<<<<< HEAD
       "Displays an embed containing the names of the server's owner, the date of its creation, its Server ID, and its member count (including bots).",
       "Displays an embed containing the user's server join date, account registration date, server role, and User ID.",
       "Responds with the changelog of the specified update (or latest if none is included).",
+=======
+      "Displays an embed containing the names of the server's owner, the date of its creation, its Server ID, and its member count (including bots)",
+      "Displays an embed containing the user's server join date, account registration date, server role, and User ID.",
+      "Responds with the changelog of the specified update (or latest if none is included)",
+>>>>>>> origin/master
       "Informs the developers of a bug via an embed on the GlitchBot development server.",
       "Suggests an idea to the developers via an embed on the GlitchBot development server."]
 
