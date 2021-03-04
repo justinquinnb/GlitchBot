@@ -68,7 +68,7 @@ names = ["forceStop", "clearDB", "unloadCog", "loadCog", "unloadCogs",
 
 parameters = ["(code)", "(code)", "<cogName>", "<cogName>", "", "", "(commandName)"]
 
-shortDescs = ["Force stops the bot.", "Clears the database.", "Unloads the specified cog.",
+shortDescs = ["Force stops the bot.", "Clears the bot's DB.", "Unloads the specified cog.",
 "Loads the specified cog.", "Unloads all cogs.", "Loads all cogs.",
 "Displays command info."]
 
@@ -88,8 +88,7 @@ paramDescs = [
   "`(cogName)` The exact name of a cog (or category name).",
   "", "", "`(commandName)` The exact name of a command (excluding prefix) only required for command-specific help."]
 
-restrictions = ["Only developers", "Only developers", "Only developers", "Only developers", "Only developers",
-"Only developers", "Anyone"]
+restrictions = ["Only developers", "Only developers", "Only developers", "Only developers", "Only developers", "Only developers", "Anyone"]
 
 # STARTUP ------------------------------------------------------------------
 
@@ -163,8 +162,7 @@ async def forceStop(ctx, inputCode:str= None):
 
     # Log the initiation and message the channel with confirmation instructions
     print("Force stop initiated by " + ctx.message.author.display_name + ". Code: " + db["forceStop Confirmation Code"])
-    confirmation = await ctx.send(f"**You are about to force stop BetaBot**. Send the command again with the code...\n`{db['forceStop Confirmation Code']}`\n...to confirm. The code expires in **10** seconds.")
-    db["forceStop Confirmation Message ID"] = confirmation.id
+    print("Force stop initiated by " + ctx.message.author.name + ". Code: " + db["forceStop Confirmation Code"])
 
     # Begin the countdown
     countdown = 10
