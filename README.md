@@ -1,9 +1,9 @@
 ## General Info:
-### What is BetaBot?
+### What is GlitchBot Beta?
 BetaBot is the developmental companion to GlitchBot, a custom-made Discord bot for exclusive use in the Glitched Gaming server. It uses the Discord.py library and is built specifically with Glitched Gaming in mind, yielding special features that make the bot generally incompatible with other servers. The end goal is to create a bot that integrates seamlessly into an established gaming community, easing existing tasks and providing additional features as well.
 
 ### Project Status
-BetaBot is currently, and will likely forever be, in development. Being GlitchBot's developmental companion, testing will always take place on BetaBot before changes and features are finalized and ready to be published in the (mostly) stable, active GlitchBot.
+GlitchBot Beta is currently, and will likely forever be, in development. Being GlitchBot's developmental companion, testing will always take place on here before changes and features are finalized and ready to be published in the (mostly) stable, active GlitchBot.
 
 ### Contributors
 * Justin Q., Lead Developer
