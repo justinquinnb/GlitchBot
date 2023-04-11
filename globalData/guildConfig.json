@@ -1,0 +1,36 @@
+{
+  "GuildConfig":[
+    {
+      "name":"Glitched Gaming",
+      "guildID":768920324183162880,
+      "positiveColor":"0x1dc9bf",
+      "negativeColor":"0xc81e4e",
+      "generalColor":"0x9a2ab0",
+      "infoChannel":768920324183162883,
+      "joinChannel":795493452967968798,
+      "vipChannel":769259341249249330,
+      "eventChannel":769040700976136242,
+      "modRole":769175358779162647,
+      "adminRole":769176118213083166,
+      "yesEmoji":805267094915907634,
+      "noEmoji":805267094915907634,
+      "maybeEmoji":805267094915907634
+    },
+    {
+      "name":"The Dev Hub",
+      "guildID":822636962526789662,
+      "positiveColor":"0x1dc9bf",
+      "negativeColor":"0xc81e4e",
+      "generalColor":"0x9a2ab0",
+      "infoChannel":822685504226197574,
+      "joinChannel":822685574942818324,
+      "vipChannel":827709729584840774,
+      "eventChannel":827708965285527572,
+      "modRole":823935328737165312,
+      "adminRole":823935304926756924,
+      "yesEmoji":827710097030512700,
+      "noEmoji":827710096955801610,
+      "maybeEmoji":827710096992632892
+    }
+  ]
+}

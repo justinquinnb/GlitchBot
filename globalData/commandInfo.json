@@ -1,0 +1,333 @@
+{
+	"CommandInfo": [{
+			"name": "forceStop",
+			"group": "Developer",
+			"params": "(code)",
+			"example": "forceStop",
+			"shortDesc": "Force stops the bot.",
+			"longDesc": "Upon initiation, provides a random 6-digit code that must be entered alongside the command again to force stop, or power off, the bot. After successful confirmation, the bot will shut down within 5 minutes.",
+			"paramDescs": "`(code)` The 6-digit code only required to confirm a force stop. Included in the initiation message.",
+			"restrictions": "Only the developers"
+		},
+		{
+			"name": "clearDB",
+			"group": "Developer",
+			"params": "(code)",
+			"example": "clearDB",
+			"shortDesc": "Clears the bot's DB.",
+			"longDesc": "Upon initiation, provides a random 6-digit code that must be entered alongside the command again to clear the bot's database. A database clear will cause the bot to forget everything in its memory, so all memory-requiring commands will not function when they try to retrieve previously stored information (like event deletion for prior events). A clear is useful, however, as it can eliminate unused keys and free up some database space. It may also help eliminate any ongoing actions that are stuck.",
+			"paramDescs": "`(code)` The 6-digit code only required to confirm a database clear. Included in the initiation message.",
+			"restrictions": "Only the developers"
+		},
+		{
+			"name": "unloadCog",
+			"group": "Developer",
+			"params": "<cogName>",
+			"example": "unloadCog General",
+			"shortDesc": "Unloads the specified cog.",
+			"longDesc": "Unloads the specified cog and group (if applicable).",
+			"paramDescs": "`<cogName>` The exact name of a cog (matches help command categories.",
+			"restrictions": "Only the developers"
+		},
+		{
+			"name": "loadCog",
+			"group": "Developer",
+			"params": "<cogName>",
+			"example": "loadCog General",
+			"shortDesc": "Loads the specified cog.",
+			"longDesc": "Loads the specified cog and group (if applicable).",
+			"paramDescs": "`(cogName)` The exact name of a cog (matches help command categories).",
+			"restrictions": "Only the developers"
+		},
+		{
+			"name": "unloadCogs",
+			"group": "Developer",
+			"params": "",
+			"example": "unloadCogs",
+			"shortDesc": "Unloads all cogs.",
+			"longDesc": "Unloads all currently loaded cogs and their groups (if applicable).",
+			"paramDescs": "",
+			"restrictions": "Only the developers"
+		},
+		{
+			"name": "loadCogs",
+			"group": "Developer",
+			"params": "",
+			"example": "loadCogs",
+			"shortDesc": "Loads all cogs.",
+			"longDesc": "Loads all currently unloaded cogs and their groups (if applicable).",
+			"paramDescs": "",
+			"restrictions": "Only the developers"
+		},
+		{
+			"name": "help",
+			"group": "General",
+			"params": "(commandName)",
+			"example": "help event",
+			"shortDesc": "Displays command info.",
+			"longDesc": "If a certain command is not specified, a list of active commands along with their parameters and brief descriptions is displayed. If a certain command is specified, displays a more detailed explanation of its use, parameters, and restrictions.",
+			"paramDescs": "`(commandName)` The exact name of a command (excluding prefix) only required for command-specific help.",
+			"restrictions": ""
+		},
+		{
+			"name": "botInfo",
+			"group": "General",
+			"params": "",
+			"example": "botInfo",
+			"shortDesc": "Displays bot info.",
+			"longDesc": "Displays an embed containing the bot's last restart, the date of its last update, its current version, and User ID.",
+			"paramDescs": "",
+			"restrictions": ""
+		},
+		{
+			"name": "serverInfo",
+			"group": "General",
+			"params": "",
+			"example": "serverInfo",
+			"shortDesc": "Displays server info.",
+			"longDesc": "Displays an embed containing the names of the server's owner, the date of its creation, its Server ID, and its member count (including bots).",
+			"paramDescs": "",
+			"restrictions": ""
+		},
+		{
+			"name": "userInfo",
+			"group": "General",
+			"params": "<@user>",
+			"example": "userInfo @Username",
+			"shortDesc": "Displays user info.",
+			"longDesc": "Displays an embed containing the user's server join date, account registration date, server role, and User ID.",
+			"paramDescs": "`<@user>` The user's server ping.",
+			"restrictions": ""
+		},
+		{
+			"name": "updateInfo",
+			"group": "General",
+			"params": "(vX.X.X)",
+			"example": "updateInfo v0.0.1",
+			"shortDesc": "Displays update info.",
+			"longDesc": "Responds with the changelog of the specified update (or latest if none is included).",
+			"paramDescs": "`(vX.X.X)` A version number formatted as X.X.X where each X represents a number. Only required to retrieve info on a previous update.",
+			"restrictions": ""
+		},
+		{
+			"name": "bugReport",
+			"group": "General",
+			"params": "<desc>",
+			"example": "bugReport \"When you use the secret command, nothing happens.\"",
+			"shortDesc": "Reports a bug with the bot.",
+			"longDesc": "Informs my developers of a bug via an embed on the development server.",
+			"paramDescs": "`<desc>` A brief description of the bug including what you did for it to happen and what the bot did as a response.",
+			"restrictions": ""
+		},
+		{
+			"name": "suggest",
+			"group": "General",
+			"params": "<desc>",
+			"example": "suggest \"Add a secret command that creates unlimited money.\"",
+			"shortDesc": "Suggests an idea for the bot.",
+			"longDesc": "Suggests an idea to my developers via an embed on the development server.",
+			"paramDescs": "`<desc>` A detailed description of your idea.",
+			"restrictions": ""
+		},
+		{
+			"name": "invite",
+			"group": "Community",
+			"params": "<userID> <name>",
+			"example": "invite \"123456789101112131\" \"Chad\"",
+			"shortDesc": "Requests an invite link for a user.",
+			"longDesc": "Opens a vote for mods and admins to approve your invitation. The vote will close after 10 minutes and will act according to the final results. If nobody votes or there is a majority approval, a 12-hour invite link will be sent to your DMs so you can send it to your friend. If the vote ends in a tie or has a majority disapproval, you will not receive an invite link.",
+			"paramDescs": "`<userID>` The ID of a user obtained by right-clicking a user's avatar and selecting Copy ID.\n`<name>` The user's actual name so the mods and admins know who they are.",
+			"restrictions": ""
+		},
+		{
+			"name": "massInvite",
+			"group": "Community",
+			"params": "<serverName>",
+			"example": "massInvite \"The Dev Hub\"",
+			"shortDesc": "Requests an invite link for a server.",
+			"longDesc": "Opens a vote for mods and admins to approve your invitation. The vote will close after 10 minutes and will act according to the final results. If nobody votes or there is a majority approval, a 24 hour, 25 use limit invite link will be sent to your DMs so you can send it to your server. If the vote ends in a tie or has a majority disapproval, you will not receive an invite link.",
+			"paramDescs": "`<serverName>` The name of the server you'd be sending the invite link to so the mods and admins know who's coming.",
+			"restrictions": ""
+		},
+		{
+			"name": "event",
+			"group": "Community",
+			"params": "<name> <desc> <game> <time>",
+			"example": "event \"Among Us Night\" \"Let's try out the new Airship map!\" \"Among Us\" \"8:30p\"",
+			"shortDesc": "Creates a new event.",
+			"longDesc": "Pings everyone in an embed to the events channel and automatically adds RSVP reactions to get an idea of who will be participating in the event.",
+			"paramDescs": "`<name>` The name of the event you are hosting.\n`<desc>` A brief description of the event.\n`<game>` The name of the game you will be playing.\n`<time>` The time the event will take place (always keep time zones in mind).",
+			"restrictions": ""
+		},
+		{
+			"name": "cancelEvent",
+			"group": "Community",
+			"params": "<eventName>",
+			"example": "cancelEvent \"Among Us Night\"",
+			"shortDesc": "Cancels an event.",
+			"longDesc": "Cancels the specified event and informs everyone of the cancellation in the event channel.",
+			"paramDescs": "`<name>` The exact name of the event you wish to cancel.",
+			"restrictions": "Only the host of the event"
+		},
+		{
+			"name": "deleteEvent",
+			"group": "Community",
+			"params": "<eventName>",
+			"example": "deleteEvent \"Among Us Night\"",
+			"shortDesc": "Deletes an event.",
+			"longDesc": "Deletes the specified event but does not inform people of its removal.",
+			"paramDescs": "`<name>` The exact name of the event you wish to delete.",
+			"restrictions": "Only the host of the event or members of power"
+		},
+		{
+			"name": "rescheduleEvent",
+			"group": "Community",
+			"params": "<eventName> <newTime>",
+			"example": "rescheduleEvent \"Among Us Night\" \"9:30p\"",
+			"shortDesc": "Reschedules an event.",
+			"longDesc": "Pings everyone in an embed that indicates the event that has been rescheduled and the new time it's taking place.",
+			"paramDescs": "`<name>` The exact name of the event you wish to reschedule.\n`<time>` The new time the event will take place (always keep time zones in mind).",
+			"restrictions": "Only the host of the event"
+		},
+		{
+			"name": "poll",
+			"group": "Interactive",
+			"params": "<name> <desc> <:emoji1:> <option1> (...)",
+			"example": "poll \"Cats or Dogs?\" \"React with which you like better!\" :cat: \"Cats\" :dog: \"Dogs\" :question: \"Neither\"",
+			"shortDesc": "Creates a poll.",
+			"longDesc": "Creates a poll embed with poll info and a selection key and automatically adds specified reactions.",
+			"paramDescs": "`<name>` The name of the poll or question being asked.\n`<desc>` A brief description of what the poll's about or for.\n`<:emoji1:>` The emoji to be used for the following <option>.\n`<option1>` The option that goes with the previous <:emoji:>.\n`(...)` To add more options, simply add more pairs of emojis and options.\n\n__You must declare at least two options to create a poll. Due to Discord's reaction limit, a max of 20 options are allowed.__",
+			"restrictions": ""
+		},
+		{
+			"name": "closePoll",
+			"group": "Interactive",
+			"params": "<pollName>",
+			"example": "closePoll \"Cats or Dogs?\"",
+			"shortDesc": "Displays a poll's results.",
+			"longDesc": "Tallys up the specified poll's reactions and displays the results (as of closure) in an embed.",
+			"paramDescs": "`<pollName>` The exact name of the poll you wish to close.",
+			"restrictions": "Only the poller"
+		},
+		{
+			"name": "deletePoll",
+			"group": "Interactive",
+			"params": "<pollName>",
+			"example": "deletePoll \"Cats or Dogs?\"",
+			"shortDesc": "Deletes the poll.",
+			"longDesc": "Deletes the specified poll without displaying results or notifying anyone.",
+			"paramDescs": "`<pollName>` The exact name of the poll you wish to delete.",
+			"restrictions": "Only the poller or a member of power"
+		},
+		{
+			"name": "roleMenu",
+			"group": "Interactive",
+			"params": "<name> <desc> <type> <persist> <:emoji1:> <@role1> (...)",
+			"example": "roleMenu \"Nickname Colors\" \"React with the color you want your nickname to be!\" \"single\" \"yes\" :redcircle: \"@RedRole\" :greencircle: \"@GreenRole\" :bluecircle: \"@BlueRole\"",
+			"shortDesc": "Creates a role menu.",
+			"longDesc": "Creates a role menu embed with role info and a selection key.",
+			"paramDescs": "`<name>` The name of the role menu.\n`<desc>` A brief description of what the role menu is for.\n`<type>` The type of role menu you wish to create, either 'single' or 'multi'. Single allows selection of only one role at a time whereas multi allows members to select however many roles they'd like.\n`<persist>` Either 'yes' or 'no'. If yes, the user's last-selected role will stay applied even if no roles are selected in the menu. If the menu is ever deleted, each user's roles will stay applied too. If no, the user will not have any roles if none are selected in the menu. If the menu is ever deleted, each user's roles will be deleted as well.\n`<:emoji1:>` The emoji that corresponds to the following <@role>.\n`<@role1>` The role mention that goes with the previous <:emoji:>.\n`(...)` To add more roles, simply add more pairs of emojis and role pings.\n\n__Due to Discord's reaction limit, a max of 20 options are allowed.__",
+			"restrictions": "Only admins and owners"
+		},
+		{
+			"name": "convertMenu",
+			"group": "Interactive",
+			"params": "<messageID> <name> <type> <persist> <:emoji1:> <@role1> (...)",
+			"example": "convertMenu \"123456789101112131\" \"Nickname Colors\" \"React with the color you want your nickname to be!\" \"single\" \"yes\" :redcircle: \"@RedRole\" :greencircle: \"@GreenRole\" :bluecircle: \"@BlueRole\"",
+			"shortDesc": "Converts one bot's role menu to a GlitchBot-compatible one",
+			"longDesc": "Converts an already-created role menu from either a bot or user into one that works with this bot. Useful if you want to get rid of other bots without requiring users to re-select their roles in a new menu.",
+			"paramDescs": "`<messageID>` The message ID of the role menu you are trying to convert.\n`<name>` The name you'd like to give the specified role menu.\n`<type>` The type of role menu you are trying to convert, either 'single' or 'multi'. Single allows selection of only one role at a time whereas multi allows members to select however many roles they'd like.\n`<persist>` Either 'yes' or 'no'. If yes, the user's last-selected role will stay applied even if no roles are selected in the menu. If the menu is ever deleted, each user's roles will stay applied too. If no, the user will not have any roles if none are selected in the menu. If the menu is ever deleted, each user's roles will be deleted as well.\n`<:emoji1:>` The emoji in the original menu that corresponds to the following <@role>.\n`<@role1>` The role mention that goes with the previous <:emoji:>.\n`(...)` To register more roles, simply add more pairs of emojis and role pings.",
+			"restrictions": "Only admins and owners"
+		},
+		{
+			"name": "removeMenu",
+			"group": "Interactive",
+			"params": "<menuName>",
+			"example": "removeMenu \"Nickname Colors\"",
+			"shortDesc": "Unregisters a role menu.",
+			"longDesc": "Removes role menu functionality from the specified role menu. The role menu message will not be deleted, but it will no longer function as a role menu. If persist is on, roles granted from the menu will remain. If persist is off, all menus granted from the menu will be removed.",
+			"paramDescs": "`<pollName>` The exact name of the role menu whose functionality you wish to remove.",
+			"restrictions": "Only the menu creator and owners"
+		},
+		{
+			"name": "deleteMenu",
+			"group": "Interactive",
+			"params": "<menuName>",
+			"example": "deleteMenu \"Nickname Colors\"",
+			"shortDesc": "Deletes a role menu.",
+			"longDesc": "Deletes the specified role menu preventing further role selection.",
+			"paramDescs": "`<menuName>` The exact name of the role menu you wish to delete.",
+			"restrictions": "Only the menu creator and owners"
+		},
+		{
+			"name": "ban",
+			"group": "Moderation",
+			"params": "<@user> <reason>",
+			"example": "ban \"@Username\" \"Way too cool.\"",
+			"shortDesc": "Allows mods to vote-ban a user.",
+			"longDesc": "Opens a poll for mods and admins to vote as to whether or not the specified user should be banned. After 30 minutes, the poll will close and, if there is a majority approval, the user in question will be banned. In all other instances, the user will not be banned.",
+			"paramDescs": "`<@user>` Ping the user or include their exact user name and 4-digit ID number.\n`<reason>` The reason for the ban.",
+			"restrictions": "Only mods"
+		},
+		{
+			"name": "purge",
+			"group": "Moderation",
+			"params": "<numOfMessages>",
+			"example": "purge 25",
+			"shortDesc": "Mass-deletes messages.",
+			"longDesc": "Mass-deletes the specified number of messages from the channel in which the command was sent. The amount of messages that can be deleted is limited to your server status. Mods may purge only 10 messages at a time, admins up to 25, and owners up to 50 for safety.",
+			"paramDescs": "`<numOfMessages>` The number of messages you'd like to delete.",
+			"restrictions": "Only members of power"
+		},
+		{
+			"name": "warn",
+			"group": "Moderation",
+			"params": "<@user> <reason>",
+			"example": "warn \"@Username\" \"You're being way too cool.\"",
+			"shortDesc": "Allows members of power to anonymously warn a user.",
+			"longDesc": "Sends an anonymous warning embed to the user's DMs that includes the server where the warning originated, how many warnings they have currently received, and what they were warned for.",
+			"paramDescs": "`<@user>` Ping the user or include their exact user name and 4-digit ID number.\n`<reason>` The reason for the warning.",
+			"restrictions": "Only members of power"
+		},
+		{
+			"name": "resetWarns",
+			"group": "Moderation",
+			"params": "<@user>",
+			"example": "resetWarns @Username",
+			"shortDesc": "Allows admins to reset a user's warnings.",
+			"longDesc": "Resets the specified user's warning count back to 0.",
+			"paramDescs": "`<@user>` Ping the user or include their exact user name and 4-digit ID number.",
+			"restrictions": "Only admins"
+		},
+		{
+			"name": "report",
+			"group": "Moderation",
+			"params": "<@user> <reason>",
+			"example": "report \"@Username\" \"Being way to cool.\"",
+			"shortDesc": "Allows anyone to anonymously report a user.",
+			"longDesc": "Allows any user to report another user for the given reason. If the user in question is a normal member, the report will be sent to mods and admins. If the user is a mod or admin, the report will only be sent to the server owners' DMs.",
+			"paramDescs": "`<@user>` Ping the user or include their exact user name and 4-digit ID number.\n`<reason>` The reason for reporting the user.",
+			"restrictions": "Anyone"
+		},
+		{
+			"name": "puppetStage",
+			"group": "Developer",
+			"params": "<channelID>",
+			"example": "puppetStage 123456789101112131",
+			"shortDesc": "Sets the puppet stage.",
+			"longDesc": "Allows developers to set the Glitched Gaming channel in which puppet messages will be sent to.",
+			"paramDescs": "`<channelID>` The ID of the channel to set as the stage.",
+			"restrictions": "Only the developers"
+		},
+		{
+			"name": "puppet",
+			"group": "Developer",
+			"params": "<message>",
+			"example": "puppet Hello World!",
+			"shortDesc": "Puppets the bot.",
+			"longDesc": "Allows developers to send the included message to the specified Glitched Gaming channel as a gag.",
+			"paramDescs": "`<message>` The message you would like to send to the channel.",
+			"restrictions": "Only the developers"
+		}
+	]
+}

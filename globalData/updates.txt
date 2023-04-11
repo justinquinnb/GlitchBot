@@ -1,3 +1,27 @@
+v0.0.8
+Coming ?/?/21
+The Streamlining Update
+**Features:**
+✓ Added configurable bot settings on server join
+
+**Optimization:**
+✓ Command JSON data is now fetched at startup to reduce help command load times
+✓ Moved global variables to new GuildConfig objects that can be stored in the database
+✓ Moved all command info to a JSON file to eliminate clunky arrays at the initiation of each cog
+✓ Rebuilt much of the bot's framework to allow for custom, server-specific bot configurations
+✓ Moved all reused functions to a new globalData package
+✓ Implemented info deletion upon removal/cancellation actions and server leave to improve space efficiency
+✓ Replaced all hard-coded bot data with self objects to allow for more seamless transitions between the beta and public versions
+
+**Bug Fixes:**
+✓ Added guild channel checks to commands to prevent those that require server functionality from causing errors when used inside DMs
+✓ Implemeneted checks for poll and role menu names to eliminate naming conflicts that would enable users to override existing polls and menus
+✓ Lowered option limit for role menus and poll to 20 to work with Discord's reaction limit
+✓ Replaced all role name checks with role ID checks to allow customization and increase security
+✓ Reformatted all database keys to facilitate searching and prevent naming conflicts
+
+--------------------
+
 v0.0.7
 3/3/21
 The Roles and Polls Update

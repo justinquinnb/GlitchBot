@@ -1,0 +1,20 @@
+{
+  "DefaultConfig":[
+    {
+      "name":null,
+      "guildID":null,
+      "positiveColor":"0x1dc9bf",
+      "negativeColor":"0xc81e4e",
+      "generalColor":"0x9a2ab0",
+      "infoChannel":null,
+      "joinChannel":null,
+      "vipChannel":null,
+      "eventChannel":null,
+      "modRole":null,
+      "adminRole":null,
+      "yesEmoji":827710097030512700,
+      "noEmoji":827710096955801610,
+      "maybeEmoji":827710096992632892
+    }
+  ]
+}

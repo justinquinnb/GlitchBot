@@ -1,108 +1,103 @@
 {
-   "embedColors":[
-      {
-         "color":"GGred",
-         "hex":"0xc81e4e"
-      },
-      {
-         "color":"GGblue",
-         "hex":"0x1dc9bf"
-      },
-      {
-         "color":"GGpurple",
-         "hex":"0x9a2ab0"
-      }
-   ],
-   "guildIDs":[
-      {
-         "guild":"GlitchBot's Home",
-         "ID":789323920506486807
-      },
-      {
-         "guild":"Glitched Gaming",
-         "ID":768920324183162880
-      }
-   ],
-   "channelIDs":[
-      {
-         "channel":"gbhModChannel",
-         "ID":796411226468122674
-      },
-      {
-         "channel":"ggMod",
-         "ID":769259341249249330
-      },
-      {
-         "channel":"gbhJoin",
-         "ID":796452386461319248
-      },
-      {
-         "channel":"ggJoin",
-         "ID":795493452967968798
-      },
-      {
-         "channel":"gbhEvent",
-         "ID":796452386461319248
-      },
-      {
-         "channel":"ggEvent",
-         "ID":769040700976136242
-      },
-      {
-         "channel":"gbhBugReports",
-         "ID":804169142876766230
-      },
-      {
-         "channel":"gbhSuggestions",
-         "ID":806004797232119838
-      }
-   ],
-   "roleIDs":[
-      {
-         "role":"gbhDevelopers",
-         "ID":796411321641467934
-      },
-      {
-         "role":"gbhMods",
-         "ID":801301557093728265
-      },
-      {
-         "role":"gbhAdmins",
-         "ID":801301846446178366
-      },
-      {
-         "role":"ggMods",
-         "ID":769175358779162647
-      },
-      {
-         "role":"ggAdmins",
-         "ID":769176118213083166
-      }
-   ],
-   "emojiIDs":[
-      {
-         "emoji":"gbhYes",
-         "ID":802964584868085770
-      },
-      {
-         "emoji":"gbhNo",
-         "ID":802964584683012137
-      },
-      {
-         "emoji":"gbhMaybe",
-         "ID":805245198686879804
-      },
-      {
-         "emoji":"ggYes",
-         "ID":779855811480387635
-      },
-      {
-         "emoji":"ggNo",
-         "ID":779855943130546196
-      },
-      {
-         "emoji":"ggMaybe",
-         "ID":779856557432504330
-      }
-   ]
+	"embedColors": [{
+			"color": "GGred",
+			"hex": "0xc81e4e"
+		},
+		{
+			"color": "GGblue",
+			"hex": "0x1dc9bf"
+		},
+		{
+			"color": "GGpurple",
+			"hex": "0x9a2ab0"
+		}
+	],
+	"guildIDs": [{
+			"guild": "GlitchBot's Home",
+			"ID": 789323920506486807
+		},
+		{
+			"guild": "Glitched Gaming",
+			"ID": 768920324183162880
+		}
+	],
+	"channelIDs": [{
+			"channel": "gbhModChannel",
+			"ID": 796411226468122674
+		},
+		{
+			"channel": "ggMod",
+			"ID": 769259341249249330
+		},
+		{
+			"channel": "gbhJoin",
+			"ID": 796452386461319248
+		},
+		{
+			"channel": "ggJoin",
+			"ID": 795493452967968798
+		},
+		{
+			"channel": "gbhEvent",
+			"ID": 796452386461319248
+		},
+		{
+			"channel": "ggEvent",
+			"ID": 769040700976136242
+		},
+		{
+			"channel": "gbhBugReports",
+			"ID": 804169142876766230
+		},
+		{
+			"channel": "gbhSuggestions",
+			"ID": 806004797232119838
+		}
+	],
+	"roleIDs": [{
+			"role": "gbhDevelopers",
+			"ID": 796411321641467934
+		},
+		{
+			"role": "gbhMods",
+			"ID": 801301557093728265
+		},
+		{
+			"role": "gbhAdmins",
+			"ID": 801301846446178366
+		},
+		{
+			"role": "ggMods",
+			"ID": 769175358779162647
+		},
+		{
+			"role": "ggAdmins",
+			"ID": 769176118213083166
+		}
+	],
+	"emojiIDs": [{
+			"emoji": "gbhYes",
+			"ID": 802964584868085770
+		},
+		{
+			"emoji": "gbhNo",
+			"ID": 802964584683012137
+		},
+		{
+			"emoji": "gbhMaybe",
+			"ID": 805245198686879804
+		},
+		{
+			"emoji": "ggYes",
+			"ID": 779855811480387635
+		},
+		{
+			"emoji": "ggNo",
+			"ID": 779855943130546196
+		},
+		{
+			"emoji": "ggMaybe",
+			"ID": 779856557432504330
+		}
+	]
 }

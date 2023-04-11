@@ -1,144 +1,96 @@
-import discord
 import os
-import random
-import string
+import sys
+import discord
 import asyncio
-import json
 from datetime import date
 from discord.ext import commands
 from replit import db
 
-# Declares this bot's intents
-intents = discord.Intents(members=True, guilds=True, bans=True, invites=True, messages=True, reactions=True)
+sys.path.insert(1, 'env/globalData')
 
-# Set the command prefix and additional bot settings
-client = commands.Bot(command_prefix='!!', intents=intents, help_command=None, owner_id=os.environ['JustinID'])
+from globalData import CommandInfo, GuildConfig, ordinal, randomCode, localize, dbUpload, getConfig, createConfig, updateConfig
 
-# Updates every time the bot is restarted
-db["Last Restart"] = (date.today()).strftime("%m/%d/%y")
+# TEMP STARTUP--------------------------------------------------------------
+db["Active Servers"] = 3
 
-# Reset the forceStop code
-db["forceStop Confirmation Code"] = None
-
-# Store necessary info locally from the JSON file
-with open('globalVars.json', 'r') as jsonFile:
-  globalVars = json.load(jsonFile)
-
-colors = {}
-for color in globalVars["embedColors"]:
-  colors[color["color"]] = int(color["hex"], 0)
-
-# FUNCTIONS ------------------------------------------------------------------
-
-# Adds ordinals to the number passed and returns the two together
-def ordinal(num):
-  number = str(num)
-  lastDigit = number[-1:]
-  if lastDigit == '0':
-    numEnd = "th"
-  elif lastDigit == '1':
-    numEnd = "st"
-  elif lastDigit == '2':
-    numEnd = "nd"
-  elif lastDigit == '3':
-    numEnd = "rd"
-  elif (float(lastDigit) <= 9) and (float(lastDigit) >= 4):
-    numEnd = "th"
-  
-  return number + numEnd
-
-# Generates a random 6-character code
-def randomCode(length):
-  # List of characters [a-zA-Z0-9]
-  chars = string.ascii_letters + string.digits
-  code = ''.join(random.choice(chars) for _ in range(length))
-  return code
-
-def isDev(ctx):
-  devs = [335440648393981952, 485182871867359255, 326453148178710530]
-  return ctx.message.author.id in devs
-
-# Create lists for groups (cogs), parameters, and descriptions so the commands here can be
-# catalogued by the help command
-groups = ["Developer", "Developer", "Developer", "Developer", "Developer",
-"Developer", "General"]
-
-names = ["forceStop", "clearDB", "unloadCog", "loadCog", "unloadCogs",
-"loadCogs", "help"]
-
-parameters = ["(code)", "(code)", "<cogName>", "<cogName>", "", "", "(commandName)"]
-
-shortDescs = ["Force stops the bot.", "Clears the bot's DB.", "Unloads the specified cog.",
-"Loads the specified cog.", "Unloads all cogs.", "Loads all cogs.",
-"Displays command info."]
-
-longDescs = [
-  "Upon initiation, provides a random 6-digit code that must be entered alongside the command again to force stop, or power off, the bot. After successful confirmation, the bot will shut down within 5 minutes.",
-  "Upon initiation, provides a random 6-digit code that must be entered alongside the command again to clear the bot's database. A database clear will cause the bot to forget everything in its memory, so all memory-requiring commands will not function when they try to retrieve previously stored information (like event deletion for prior events). A clear is useful, however, as it can eliminate unused keys and free up some database space. It may also help eliminate any ongoing actions that are stuck.",
-  "Unloads the specified cog (or group of commands).",
-  "Loads the specified cog (or group of commands).",
-  "Unloads all currently loaded cogs (or groups of commands).",
-  "Loads all currently unloaded cogs (or groups of commands).",
-  "If a certain command is not specified, a list of active commands along with their parameters and brief descriptions is displayed. If a certain command is specified, displays a more detailed explanation of its use, parameters, and restrictions."]
-
-paramDescs = [
-  "`(code)` The 6-digit code only required to confirm a force stop. Included in the initiation message.",
-  "`(code)` The 6-digit code only required to confirm a database clear. Included in the initiation message.",
-  "`(cogName)` The exact name of a cog (or category name).",
-  "`(cogName)` The exact name of a cog (or category name).",
-  "", "", "`(commandName)` The exact name of a command (excluding prefix) only required for command-specific help."]
-
-restrictions = ["Only developers", "Only developers", "Only developers", "Only developers", "Only developers", "Only developers", "Anyone"]
-
-longDescs = [
-  "Upon initiation, provides a random 6-digit code that must be entered alongside the command again to force stop, or power off, the bot. After successful confirmation, the bot will shut down within 5 minutes.",
-  "Unloads the specified cog (or group of commands).",
-  "Loads the specified cog (or group of commands).",
-  "Unloads all currently loaded cogs (or groups of commands).",
-  "Loads all currently unloaded cogs (or groups of commands).",
-  "If a certain command is not specified, a list of active commands along with their parameters and brief descriptions is displayed. If a certain command is specified, displays a more detailed explanation of its use, parameters, and restrictions."]
-
-paramDescs = [
-  "`(code)` The 6-digit code only required to confirm a force stop. Included in the initiation message.",
-  "`(cogName)` The exact name of a cog (or category name).",
-  "`(cogName)` The exact name of a cog (or category name).",
-  "", "", "`(commandName)` The exact name of a command (excluding prefix) only required for command-specific help."]
-
-restrictions = ["Only developers", "Only developers", "Only developers", "Only developers",
-"Only developers", "Anyone"]
+#del db["Last Config Message For 829191766296363020"]
+#del db["Starter Config Message For 829191766296363020"]
+db["Config Step For 829191766296363020"] = 0
 
 # STARTUP ------------------------------------------------------------------
+# "Localize" JSON data
+print("[STARTUP] GlitchBot is starting up! Localizing data...")
+cInfo = {}
+localize("globalData/commandInfo.json", cInfo, CommandInfo)
 
-print("[STARTUP] Starting up...\n[STARTUP] Loading cogs...")
+# Upload any local server config changes to the database
+print("[STARTUP] Data successfully localized. Updating database with local data...")
+dbUpload("globalData/guildConfig.json", db, "Guild Config For ", GuildConfig)
 
-# Loads each cog within the cogs folder
+# Sync the database to reflect changes in key formatting or objects
+print("[STARTUP] Local data successfully uploaded. Syncing database changes...")
+#--- dbSync
+
+# Reset data pertaining to force stops and database clears
+print("[STARTUP] Database successfully synced. Resetting bot memory...")
+
+db["forceStop Confirmed"] = False
+db["forceStop Confirmation Code"] = None
+db["forceStop Confirmation Message ID"] = None
+
+db["clearDB Confirmed"] = False
+db["clearDB Confirmation Code"] = None
+db["clearDB Confirmation Message ID"] = None
+
+# Obtain bot update info
+with open("globalData/updates.txt", "r") as file:
+  content = file.readlines()
+  db["Bot Version"] = content[0].strip()
+  db["Update Date"] = content[1].strip()
+db["Last Restart"] = (date.today()).strftime("%m/%d/%y")
+
+# Declare bot information before sign-in
+print("[STARTUP] Command memory cleared. Initializing bot...")
+intents = discord.Intents(members=True, guilds=True, bans=True, invites=True, messages=True, reactions=True)
+
+client = commands.Bot(command_prefix='!!', intents=intents, help_command=None, owner_id=os.environ['JustinID'])
+
+# Load all cogs in the cogs folder
+print("[STARTUP] Bot initialized. Signing client in...")
 for filename in os.listdir('./cogs'):
   if filename.endswith('.py'):
     client.load_extension(f'cogs.{filename[:-3]}')
 
-print("[STARTUP] Cogs successfully loaded.\n[STARTUP] Resetting memory...")
-# Reset forceStop confirmation memory
-db["forceStop Confirmed"] = False
-db["forceStop Confirmation Code"] = None
-db["forceStop Confirmation Message ID"] = None
-print("[STARTUP] Memory reset.")
-
 # On startup console log and status setter
 @client.event
 async def on_ready():
-    print('[STARTUP] Startup complete. BetaBot has logged in as {0.user}'.format(client))
-    print('-------------------------------------')
+  print(f"[STARTUP] Startup complete. Client has logged in as {client.user}.")
+  print('-------------------------------------')
 
-    # Set bot status upon sucessful login
-    await client.change_presence(status=discord.Status.online, activity=discord.Game("The Development Game"))
+  # Set bot status upon sucessful login
+  await client.change_presence(status=discord.Status.online, activity=discord.Game("GlitchBot Beta"))
+
+  # Change the bot's nickname in the development servers to reflect current usage
+  devGuildIDs = [789323920506486807, 822636962526789662]
+  for guildID in devGuildIDs:
+    devServer = client.get_guild(guildID)
+    botMember = await devServer.fetch_member(client.user.id)
+    await botMember.edit(nick="GlitchBot Beta (BB)")
+
+# CHECKS ------------------------------------------------------------------
+
+def isDev(ctx):
+  devs = [335440648393981952, 485182871867359255, 326453148178710530]
+  return ctx.message.author.id in devs
 
 # EVENTS ------------------------------------------------------------------
 
 # Sends an embed to the announcements channel on member join
 @client.event
 async def on_member_join(member):
-  channel = member.guild.system_channel
-  joinEmbed = discord.Embed(title=f"Welcome to {member.guild.name}, {member.name}!", color=colors["GGblue"])
+  cfg = getConfig(member.guild.id)
+  channel = member.guild.get_channel(cfg["infoChannel"])
+  joinEmbed = discord.Embed(title=f"Welcome to {member.guild.name}, {member.name}!", color=cfg["positiveColor"])
   joinEmbed.set_author(name=f"{member.name} joined the server | {ordinal(len(member.guild.members))} member", icon_url=member.avatar_url)
   joinEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/798607925882126346/memberjoin.png")
   await channel.send(embed=joinEmbed)
@@ -150,8 +102,9 @@ async def on_member_remove(member):
   try:
     await member.guild.fetch_ban(member)
   except:
-    channel = member.guild.system_channel
-    leaveEmbed = discord.Embed(title=f"Bye, {member.name}! See you around!", color=colors["GGred"])
+    cfg = getConfig(member.guild.id)
+    channel = member.guild.get_channel(cfg["infoChannel"])
+    leaveEmbed = discord.Embed(title=f"Bye, {member.name}! See you around!", color=cfg["negativeColor"])
     leaveEmbed.set_author(name=f"{member.name} left the server", icon_url=member.avatar_url)
     leaveEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/798608106057629766/memberleave.png")
     await channel.send(embed=leaveEmbed)
@@ -159,11 +112,297 @@ async def on_member_remove(member):
 # Sends an embed to the announcements channel on member ban
 @client.event
 async def on_member_ban(guild, member):
-  channel = member.guild.system_channel
-  banEmbed = discord.Embed(title=f"The almighty ban hammer has spoken. {member.name}, begone!", color=colors["GGred"])
+  cfg = getConfig(member.guild.id)
+  channel = member.guild.get_channel(cfg["infoChannel"])
+  banEmbed = discord.Embed(title=f"The almighty ban hammer has spoken. {member.name}, begone!", color=cfg["negativeColor"])
   banEmbed.set_author(name=f"{member.name} was banned", icon_url=member.avatar_url)
   banEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/798752034077671464/memberban.png")
   await channel.send(embed=banEmbed)
+
+# Begin bot configuration upon client join
+@client.event
+async def on_guild_join(guild):
+  # Send the initial welcome embed
+  welcomeEmbed = discord.Embed(
+    title=f"Hi, I'm {client.user.name}! Thanks for inviting me!",
+    description=f"Before I can begin, please take a moment to set me up using the `{client.command_prefix}config` command.",
+    color=0x9a2ab0)
+
+  db["Active Servers"] += 1
+  welcomeEmbed.set_thumbnail(url=client.user.avatar_url)
+  welcomeEmbed.add_field(name="Version:", value=db["Bot Version"], inline=True)
+  welcomeEmbed.add_field(name="Last Update:", value=db["Update Date"], inline=True)
+  welcomeEmbed.add_field(name="Servers:", value=str(db["Active Servers"]), inline=True)
+
+  db[f"Config Step For {guild.id}"] = 0
+  
+  sysChannel = guild.system_channel
+  await sysChannel.send(embed=welcomeEmbed)
+
+# Delete all associated database data upon client removal
+@client.event
+async def on_guild_remove(guild):
+  # All the information to delete upon client removal
+  generalKeyPrefixes = [
+    "Guild Config For ",
+    "Config Step For ",
+    "Personal Invite Pending For ",
+    "Server Invite Pending For ",
+    "ID For Event ",
+    "Host ID For Event",
+    "ID For Poll ",
+    "Poller ID For Poll ",
+    "Options For Poll ",
+    "Emojis For Poll ",
+    "ID For Menu ",
+    "Creator ID For Menu ",
+    "Emojis For Menu ",
+    "Role IDs For Menu ",
+    "Type For Menu ",
+    "Persist For Menu ",
+    "Ban Pending For ",
+    "Warnings For "]
+  
+  # Add guild IDs to each key
+  fullKeyPrefixes = []
+  for prefix in generalKeyPrefixes:
+    fullKeyPrefixes.append(prefix + guild.id)
+  
+  # Delete all the keys with the narrowed-down prefixes
+  for fullPrefix in fullKeyPrefixes:
+    for keyToDelete in db.prefix(fullPrefix):
+      del db[keyToDelete]
+  
+  db["Active Servers"] -= 1
+
+# INITIAL GUILD config -------------------------------------------------------
+@client.command()
+@commands.guild_only()
+async def config(ctx, arg=None):
+  # Ensure it's the server owner using the command
+  if ctx.message.author.id == ctx.guild.owner_id:
+    # Begin the correct procedure depending on whether or not this is the command's first
+    # use
+    if f"Config Step For {ctx.guild.id}" in db: 
+      if db[f"Config Step For {ctx.guild.id}"] == 0:
+        starterMessage = await ctx.send(
+          """Ok, let's get started!\n__-For each question, respond using the config command and your answer immediately after.__\n__-Remember, settings can be changed again at any time, so don't stress about mistakes!__"""
+        )
+
+        db[f"Starter Config Message For {ctx.guild.id}"] = starterMessage.id
+
+        # Create a guild config object for the current guild
+        createConfig(db, ctx.guild.id)
+
+        lastMessage = await ctx.send(f"""
+          **First, let's set up your join, info, event, and VIP channels!**\n> What channel would you like bot-created invite links to send new users to?\n> *Example:* `{client.command_prefix}config #welcome`""")
+
+        db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+        db[f"Config Step For {ctx.guild.id}"] = 1
+
+      elif db[f"Config Step For {ctx.guild.id}"] == 1:
+        # Store the join channel ID
+        arg = ctx.guild.get_channel(int(arg[2:-1]))
+
+        if type(arg) == discord.channel.TextChannel:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          
+          updateConfig(db, ctx.guild.id, "joinChannel", arg.id)
+          lastMessage = await ctx.send(
+            f"""Got it! New users will be directed to the {arg.mention} when they join with an invite link I created.\n**What channel would you like me to send member join, leave, and ban messages to?**\n> *Example:* `{client.command_prefix}config #announcements`""")
+
+          db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+          db[f"Config Step For {ctx.guild.id}"] = 2
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid channel.** Make sure you are using the # form of the channel, then try again.")
+          await warning.delete(delay=3)
+
+      elif db[f"Config Step For {ctx.guild.id}"] == 2:
+        arg = ctx.guild.get_channel(int(arg[2:-1]))
+        
+        # Store the info channel ID
+        if type(arg) == discord.channel.TextChannel:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          
+          updateConfig(db, ctx.guild.id, "infoChannel", arg.id)
+          lastMessage = await ctx.send(
+            f"""Alrighty! Member join, leave, and ban messages will appear in {arg.mention}.\n**What channel would you like mod vote invites, bans and reports to appear?**\n> *Example:* `{client.command_prefix}config #vip-channel`""")
+
+          db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+          db[f"Config Step For {ctx.guild.id}"] = 3
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid channel.** Make sure you are using the # form of the channel, then try again.")
+          await warning.delete(delay=3)
+      
+      elif db[f"Config Step For {ctx.guild.id}"] == 3:
+        arg = ctx.guild.get_channel(int(arg[2:-1]))
+        
+        # Store the VIP channel ID
+        if type(arg) == discord.channel.TextChannel:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          
+          updateConfig(db, ctx.guild.id, "vipChannel", arg.id)
+          lastMessage = await ctx.send(
+            f"""Sounds good! Mod vote invites, bans, and reports will appear in {arg.mention}.\n**Finally, what channel would you like your server's events to appear in?**\n> *Example:* `{client.command_prefix}config #events`""")
+
+          db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+          db[f"Config Step For {ctx.guild.id}"] = 4
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid channel.** Make sure you are using the # form of the channel, then try again.")
+          await warning.delete(delay=3)
+      
+      elif db[f"Config Step For {ctx.guild.id}"] == 4:
+        arg = ctx.guild.get_channel(int(arg[2:-1]))
+        
+        # Store the event channel ID
+        if type(arg) == discord.channel.TextChannel:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          
+          updateConfig(db, ctx.guild.id, "eventChannel", arg.id)
+          lastMessage = await ctx.send(
+            f"""Awesome! Your server's events will appear in {arg.mention}.\n**We're halfway there! Now onto your server's roles...**\n> What role should I consider to be your "mod" role? (Admins will be next)\n> *Example:* `{client.command_prefix}config @Mods`""")
+
+          db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+          db[f"Config Step For {ctx.guild.id}"] = 5
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid channel.** Make sure you are using the # form of the channel, then try again.")
+          await warning.delete(delay=3)
+      
+      elif db[f"Config Step For {ctx.guild.id}"] == 5:
+        arg = ctx.guild.get_role(int(arg[3:-1]))
+        
+        # Store the mod role ID
+        if type(arg) == discord.Role:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          
+          updateConfig(db, ctx.guild.id, "modRole", arg.id)
+          lastMessage = await ctx.send(
+            f"""Great! I will consider those with the {arg.mention} role mods.\n**Now what role should I consider to be your "admin" role?**\n> *Example:* `{client.command_prefix}config @admins`""")
+
+          db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+          db[f"Config Step For {ctx.guild.id}"] = 6
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid role.** Make sure you are using the @ form of the role, then try again.")
+          await warning.delete(delay=3)
+      
+      elif db[f"Config Step For {ctx.guild.id}"] == 6:
+        arg = ctx.guild.get_role(int(arg[3:-1]))
+        
+        # Store the admin role ID
+        if type(arg) == discord.Role:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          starterMessage = await ctx.fetch_message(db[f"Starter Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          await starterMessage.delete()
+          
+          updateConfig(db, ctx.guild.id, "AdminRole", arg.id)
+          lastMessage = await ctx.send(
+            f"Perfect! I will consider those with the {arg.mention} role.\n**Configuration complete! {client.user.name} is now set up and ready to go!**\n> If you'd like to change your config, use the `{client.command_prefix}config` command again at any time.\n> Other than that, try the `{client.command_prefix}help` command to see all that I can do!")
+
+          # Delete the temporary config key
+          del db[f"Config Step For {ctx.guild.id}"]
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid role.** Make sure you are using the @ form of the role, then try again.")
+          await warning.delete(delay=3)
+
+      # !!!!!!!!CURRENTLY DISABLED!!!!!!!!
+      elif db[f"Config Step For {ctx.guild.id}"] == -6:
+        arg = ctx.guild.get_role(int(arg[3:-1]))
+        
+        # Store the admin role ID
+        if type(arg) == discord.Role:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          
+          db[f"Guild Config For {ctx.guild.id}"]["adminRole"] = arg.id
+          lastMessage = await ctx.send(
+            f"""Okay! I will consider those with the {arg.mention} role admins.\n**We're almost done! Let's finish off with emojis...**\n> Which emoji should I consider to be your "yes" emoji?\n> *Example:* `{client.command_prefix}config :thumbsup:`""")
+
+          db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+          db[f"Config Step For {ctx.guild.id}"] = 7
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid role.** Make sure you are using the @ form of the role, then try again.")
+          await warning.delete(delay=3)
+
+      elif db[f"Config Step For {ctx.guild.id}"] == -7:
+        try:
+          arg = await ctx.guild.fetch_emoji(int(arg[2:-1]))
+        except:
+          pass
+        
+        print(type(arg))
+
+        # Store the yes emoji ID
+        if type(arg) == discord.Emoji:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          
+          db[f"Guild Config For {ctx.guild.id}"]["yesEmoji"] = arg.id
+          lastMessage = await ctx.send(
+            f"""Good choice! I will consider {arg} to be your "yes" emoji.\n**What should I consider to be your "no" emoji?**\n> *Example:* `{client.command_prefix}config :thumbsdown:`""")
+
+          db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+          db[f"Config Step For {ctx.guild.id}"] = 8
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid emoji.** Make sure it is a proper emoji, then try again.")
+          await warning.delete(delay=3)
+      
+      elif db[f"Config Step For {ctx.guild.id}"] == -8:
+        try:
+          arg = await ctx.guild.fetch_emoji(int(arg[2:-1]))
+        except:
+          pass
+        
+        # Store the no emoji ID
+        if type(arg) is discord.Emoji:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          
+          db[f"Guild Config For {ctx.guild.id}"]["noEmoji"] = arg.id
+          lastMessage = await ctx.send(
+            f"""Great choice! I will consider {arg} to be your "no" emoji.\n**Last but not least, what should I consider to be your "maybe" emoji?**\n> *Example:* `{client.command_prefix}config :person_shrugging:`""")
+
+          db[f"Last Config Message For {ctx.guild.id}"] = lastMessage.id
+          db[f"Config Step For {ctx.guild.id}"] = 9
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid emoji.** Make sure it is a proper emoji, then try again.")
+          await warning.delete(delay=3)
+      
+      elif db[f"Config Step For {ctx.guild.id}"] == -9:
+        try:
+          arg = await ctx.guild.fetch_emoji(int(arg[2:-1]))
+        except:
+          pass
+        
+        # Store the maybe emoji ID
+        if type(arg) is discord.Emoji:
+          lastMessage = await ctx.fetch_message(db[f"Last Config Message For {ctx.guild.id}"])
+          starterMessage = await ctx.fetch_message(db[f"Starter Config Message For {ctx.guild.id}"])
+          await lastMessage.delete()
+          await starterMessage.delete()
+          
+          db[f"Guild Config For {ctx.guild.id}"]["maybeEmoji"] = arg.id
+          db[f"Last Config Message For {ctx.guild.id}"] = await ctx.send(
+            f"""Perfect! I will consider {arg} to be your "maybe" emoji.\n**Configuration complete! {client.user.name} is now set up and ready to go!**\n> If you'd like to change your config, use the `{client.command_prefix}config` command again at any time.\n> Other than that, try the `{client.command_prefix}help` command to see all that I can do!""")
+
+          # Delete the temporary config key
+          del db[f"Config Step For {ctx.guild.id}"]
+
+        else:
+          warning = await ctx.send("**Sorry, but that does not appear to be a valid emoji.** Make sure it is a proper emoji, then try again.")
+          await warning.delete(delay=3)
+
+    else:
+      await ctx.send("**Sorry, but non-initiative usage of this command is not yet complete. Please try again later.**")
+
+  else:
+    await ctx.send("**Sorry, but only the server owner can configure the bot.** Please contact them if there's a problem.")
+    
 
 # COMMANDS ------------------------------------------------------------------
 # Command for force stopping the bot
@@ -179,7 +418,8 @@ async def forceStop(ctx, inputCode:str= None):
 
     # Log the initiation and message the channel with confirmation instructions
     print("Force stop initiated by " + ctx.message.author.display_name + ". Code: " + db["forceStop Confirmation Code"])
-    print("Force stop initiated by " + ctx.message.author.name + ". Code: " + db["forceStop Confirmation Code"])
+    confirmation = await ctx.send(f"**You are about to force stop {client.user.name}**. Send the command again with the code...\n`{db['forceStop Confirmation Code']}`\n...to confirm. The code expires in **10** seconds.")
+    db["forceStop Confirmation Message ID"] = confirmation.id
 
     # Begin the countdown
     countdown = 10
@@ -189,7 +429,7 @@ async def forceStop(ctx, inputCode:str= None):
       await asyncio.sleep(1)
       countdown -= 1
       if not db["forceStop Confirmed"]:
-        await confirmation.edit(content=f"**You are about to force stop BetaBot**. Send the command again with the code...\n`{db['forceStop Confirmation Code']}`\n...to confirm. The code expires in **{str(countdown)}** seconds.")
+        await confirmation.edit(content=f"**You are about to force stop {client.user.name}**. Send the command again with the code...\n`{db['forceStop Confirmation Code']}`\n...to confirm. The code expires in **{str(countdown)}** seconds.")
     
     # If the force stop wasn't confirmed by the end of the countdown, update the message
     if not db["forceStop Confirmed"]:
@@ -205,11 +445,12 @@ async def forceStop(ctx, inputCode:str= None):
   # If the user enters the correct confirmation code, prevent the bot from receiving the
   # uptime ping and send/log a success message
   elif inputCode == db["forceStop Confirmation Code"] and db["forceStop Confirmation Code"] != None:
+    cfg = getConfig(ctx.guild.id)
     db["forceStop Confirmed"] = True
     confirmation = await ctx.fetch_message(db["forceStop Confirmation Message ID"])
     print(f"Force stop confirmed by {ctx.message.author.display_name}!")
     await confirmation.edit(content="**Bot force stop confirmed.** The code is no longer usable.")
-    confirmationEmbed = discord.Embed(title="Bot will shut down within 5 minutes...", color=colors["GGred"])
+    confirmationEmbed = discord.Embed(title="Bot will shut down within 5 minutes...", color=cfg["negativeColor"])
     confirmationEmbed.set_author(name=f"Force stop confirmed by {ctx.message.author.display_name}.", icon_url=ctx.message.author.avatar_url)
     confirmationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/800209126550011904/forcestop.png")
     
@@ -231,7 +472,7 @@ async def clearDB(ctx, inputCode:str= None):
 
     # Log the initiation and message the channel with confirmation instructions
     print("Database clear initiated by " + ctx.message.author.display_name + ". Code: " + db["clearDB Confirmation Code"])
-    confirmation = await ctx.send(f"**You are about to clear the BetaBot database**. Send the command again with the code...\n`{db['clearDB Confirmation Code']}`\n...to confirm. The code expires in **10** seconds.")
+    confirmation = await ctx.send(f"**You are about to clear the {client.user.name} database**. Send the command again with the code...\n`{db['clearDB Confirmation Code']}`\n...to confirm. The code expires in **10** seconds.")
     db["clearDB Confirmation Message ID"] = confirmation.id
 
     # Begin the countdown
@@ -242,7 +483,7 @@ async def clearDB(ctx, inputCode:str= None):
       await asyncio.sleep(1)
       countdown -= 1
       if not db["clearDB Confirmed"]:
-        await confirmation.edit(content=f"**You are about to clear the BetaBot database**. Send the command again with the code...\n`{db['clearDB Confirmation Code']}`\n...to confirm. The code expires in **{str(countdown)}** seconds.")
+        await confirmation.edit(content=f"**You are about to clear the {client.user.name} database**. Send the command again with the code...\n`{db['clearDB Confirmation Code']}`\n...to confirm. The code expires in **{str(countdown)}** seconds.")
     
     # If the database clear wasn't confirmed by the end of the countdown, update
     # the message
@@ -258,11 +499,12 @@ async def clearDB(ctx, inputCode:str= None):
 
   # If the user enters the correct confirmation code, clear the bot's database
   elif inputCode == db["clearDB Confirmation Code"] and db["clearDB Confirmation Code"] != None:
+    cfg = getConfig(ctx.guild.id)
     db["clearDB Confirmed"] = True
     confirmation = await ctx.fetch_message(db["clearDB Confirmation Message ID"])
     print(f"Database clear confirmed by {ctx.message.author.display_name}!")
     await confirmation.edit(content="**Database clear confirmed.** The code is no longer usable.")
-    confirmationEmbed = discord.Embed(title="The database will be cleared shortly...", color=colors["GGred"])
+    confirmationEmbed = discord.Embed(title="The database will be cleared shortly...", color=cfg["negativeColor"])
     confirmationEmbed.set_author(name=f"Database clear confirmed by {ctx.message.author.display_name}.", icon_url=ctx.message.author.avatar_url)
     confirmationEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/815426922052845578/dbclear.png")
 
@@ -369,9 +611,18 @@ async def loadCogs(ctx):
 # Smart help command that automatically catalogues loaded cogs and commands
 @client.command()
 async def help(ctx, inputCommand:str = None):
+  cfg = getConfig(ctx.guild.id)
+
+  # Use the correct prefix for the bot
+  prefix = client.command_prefix
+  mainGroups = ["Developer", "General"]
+  mainCommands = ["forceStop", "clearDB", "unloadCog", "unloadCogs", "loadCog", "loadCogs", "help"]
+
   if inputCommand == None:
     # Set up the base help embed
-    helpEmbed = discord.Embed(title="Here's a list of commands:", description="Required   parameters in <>. Optional parameters in ().", color=colors["GGpurple"])
+    helpEmbed = discord.Embed(
+      title="Here's a list of commands:",
+      description="Required   parameters in <>. Optional parameters in ().", url="https://docs.google.com/document/d/1bXniMEdQ1p0rBe5EJsHFVl-8AL8huo2FJ0qL7ANBeTU/edit?usp=sharing", color=cfg["generalColor"])
 
     # Here, cog refers to the groups of commands located outside this file. Group names
     # are for commands which belong in a cog, but are located in this file. All cogs are
@@ -380,7 +631,7 @@ async def help(ctx, inputCommand:str = None):
     # Ensure the help command is displayed regardless of whether or not the general cog
     # is loaded
     if "General" not in client.cogs:
-      helpEmbed.add_field(name="General", value="`;;help (commandName)` Displays command info.", inline=False)
+      helpEmbed.add_field(name="General", value=f"`{prefix}help (commandName)` Displays command info.", inline=False)
 
     # Iterate through all the loaded cogs
     for cogName in client.cogs:
@@ -388,35 +639,36 @@ async def help(ctx, inputCommand:str = None):
 
       # If the cog has commands or there is a command within main.py that belongs to that
       # group, add those commands to the list
-      if (len(cog.get_commands()) != 0) or cogName in groups:
+      if (len(cog.get_commands()) != 0) or (cogName in mainGroups):
         # This string variable will house all the commands and their information for every
         # group
         commandList = ""
 
-        # If there is a command in main.py that belongs to the cog/group we're currently
+        # If there is a command in main.py that belongs to the cog we're currently
         # registering, add it
-        if cogName in groups:
+        if cogName in mainGroups:
           commandNum = 0
           # Scan through all the commands in main.py and add the ones that belong to the
-          # cog/group we're currently registering
-          for groupName in groups:
-            # Format the command appropriately depending on whether it contains parameters
-            if groupName == cogName:
-              if parameters[commandNum] != "":
-                commandList = commandList + "`!!" + names[commandNum] + " " + parameters  [commandNum] + "` " + shortDescs[commandNum] + "\n"
+          # cog we're currently registering
+          for commandName in mainCommands:
+            currentCommand = cInfo[mainCommands[commandNum]]
+            # If the command belongs to a group/cog which is loaded, add it
+            if currentCommand.group == cogName:
+              if currentCommand.params != "":
+                commandList = commandList + f"`{prefix}" + currentCommand.name + " " + currentCommand.params + "` " + currentCommand.shortDesc + "\n"
               else:
-                commandList = commandList + "`!!" + names[commandNum] + "` " + shortDescs [commandNum] + "\n"
+                commandList = commandList + f"`{prefix}" + currentCommand.name + "` " + currentCommand.shortDesc + "\n"
+
             commandNum += 1
 
-        commandNum = 0
-        # Add each cog's commands, parameters, and descriptions to the embed field
+        # Add all the commands from the actual cog to the help string
         for command in cog.get_commands():
           # Format the command appropriately depending on whether or not it contains parameters
-          if cog.parameters[commandNum] != "":
-            commandList = commandList + "`!!" + str(command) + " " + cog.parameters[commandNum]   + "` " + cog.shortDescs[commandNum] + "\n"
+          currentCommand = cInfo[str(command)]
+          if currentCommand.params != "":
+            commandList = commandList + f"`{prefix}" + currentCommand.name + " " + currentCommand.params + "` " + currentCommand.shortDesc + "\n"
           else:
-            commandList = commandList + "`!!" + str(command) + "` " + cog.shortDescs  [commandNum] + "\n"
-          commandNum += 1
+            commandList = commandList + f"`{prefix}" + currentCommand.name + "` " + currentCommand.shortDesc + "\n"
 
         # Finish this group of commands off by adding it to the help embed as a new field
         helpEmbed.add_field(name=cogName.title() + ":", value=commandList, inline=False)
@@ -424,61 +676,29 @@ async def help(ctx, inputCommand:str = None):
     # Complete the embed by adding a thumbnail and WIP footer, then send it to the
     # requested channel
     helpEmbed.set_thumbnail (url="https://cdn.discordapp.com/attachments/796907538570412033/799741594701922354/help.png")
-    helpEmbed.set_footer(text="This bot is currently a WIP. Commands are subject to change.")
+    helpEmbed.set_footer(text="For a full guide on GlitchBot's commands, click the link above")
     await ctx.send(embed=helpEmbed)
   else:
-    inputCommand = inputCommand.lower()
-    
-    # Determine if the specified command exists and is loaded
-    commandName = None
-    commandNum = 0
-    commandIndex = 0
-    commandLocation = None
-    for cogName in client.cogs:
-      cog = client.get_cog(cogName)
-      if (cogName in groups) and (commandName == None):
-        for command in names:
-          if inputCommand == command.lower():
-            commandName = command
-            commandLocation = "Main"
-            commandIndex = commandNum
-          commandNum += 1
-      if commandName == None:
-        commandNum = 0
-        for command in cog.get_commands():
-          if inputCommand == (str(command)).lower():
-            commandName = command
-            commandLocation = cog
-            commandIndex = commandNum
-          commandNum += 1
-          
     # Send help information if the specified command is valid. Otherwise, send an error message
-    if commandName != None:
+    if inputCommand in cInfo.keys():
+      command = cInfo[inputCommand]
+      
       # Retrieve the specified command information and add it to an embed
-      if commandLocation == "Main":
-        if parameters[commandIndex] != "":
-          helpEmbed = discord.Embed(title=f"!!{commandName} {parameters[commandIndex]}", color=colors["GGpurple"])
-        else:
-          helpEmbed = discord.Embed(title=f"!!{commandName}", color=colors["GGpurple"])
-        
-        helpEmbed.add_field(name="Description:", value=longDescs[commandIndex], inline=False)
-        
-        if parameters[commandIndex] != "":
-          helpEmbed.add_field(name="Parameters:", value=paramDescs[commandIndex], inline=False)
+      if command.params != "":
+        helpEmbed = discord.Embed(title=f"{prefix}{command.name} {command.params}", color=cfg["generalColor"])
+      else:
+        helpEmbed = discord.Embed(title=f"{prefix}{command.name}", color=cfg["generalColor"])
+      
+      helpEmbed.add_field(name="Example:", value=f"`{prefix}{command.example}`", inline=False)
+      helpEmbed.add_field(name="Description:", value=command.longDesc, inline=False)
 
-        helpEmbed.add_field(name="Restrictions:", value=f"{restrictions[commandIndex]} can use this command.", inline=False)
-      elif commandLocation != "Main":
-        if commandLocation.parameters[commandIndex] != "":
-          helpEmbed = discord.Embed(title=f"!!{commandName} {commandLocation.parameters[commandIndex]}", color=colors["GGpurple"])
-        else:
-          helpEmbed = discord.Embed(title=f"!!{commandName}", color=colors["GGpurple"])
-        
-        helpEmbed.add_field(name="Description:", value=commandLocation.longDescs[commandIndex], inline=False)
+      if command.paramDescs != "":
+        helpEmbed.add_field(name="Parameters:", value=command.paramDescs, inline=False)
 
-        if commandLocation.parameters[commandIndex] != "":
-          helpEmbed.add_field(name="Parameters:", value=commandLocation.paramDescs[commandIndex], inline=False)
-        
-        helpEmbed.add_field(name="Restrictions:", value=f"{commandLocation.restrictions[commandIndex]} can use this command.", inline=False)
+      if command.restrictions != "":
+        helpEmbed.add_field(name="Restrictions:", value=f"{command.restrictions} can use this command.", inline=False)
+      else:
+        helpEmbed.add_field(name="Restrictions:", value="Anyone can use this command.", inline=False)
 
       helpEmbed.set_thumbnail(url="https://cdn.discordapp.com/attachments/796907538570412033/799741594701922354/help.png")
       helpEmbed.set_footer(text="This bot is currently a WIP. Commands are subject to change.")
