@@ -62,7 +62,7 @@ def clearPunctuation(string):
   return string
 
 # CHECK FUNCTIONS-------------------------------------------------------------
-def configCheck(ctx, reqConfigs):
+#def configCheck(ctx, reqConfigs):
   
 
 # JSON FUNCTIONS--------------------------------------------------------------

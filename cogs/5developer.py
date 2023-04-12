@@ -37,5 +37,5 @@ class Developer(commands.Cog):
     except:
       await ctx.send("**You must set the puppet stage!**")
 
-def setup(client):
-  client.add_cog(Developer(client))
+async def setup(client):
+  await client.add_cog(Developer(client))

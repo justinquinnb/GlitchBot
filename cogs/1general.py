@@ -183,5 +183,5 @@ class General(commands.Cog):
 
     db[f"Suggestion #{ticketNumber}"] = suggestionMessage.id
 
-def setup(client):
-  client.add_cog(General(client))
+async def setup(client):
+  await client.add_cog(General(client))

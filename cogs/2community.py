@@ -394,5 +394,5 @@ class Community(commands.Cog):
       host = self.client.get_user(db["Host ID For Event " + keySuffix])
       await ctx.send(f"**Sorry, but only the event host can reschedule that event!** Please reach out to {host.name} to do so.")
 
-def setup(client):
-  client.add_cog(Community(client))
+async def setup(client):
+  await client.add_cog(Community(client))

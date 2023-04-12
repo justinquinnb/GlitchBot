@@ -601,5 +601,5 @@ class Interactive(commands.Cog):
       
       print(f"Reactions found: {numOfReactions}")
   """
-def setup(client):
-  client.add_cog(Interactive(client))
+async def setup(client):
+  await client.add_cog(Interactive(client))
